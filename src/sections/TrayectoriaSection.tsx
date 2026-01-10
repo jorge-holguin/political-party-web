@@ -55,21 +55,21 @@ const trayectoria = [
 
 export default function TrayectoriaSection() {
   return (
-    <section id="trayectoria" className="py-20 bg-white dark:bg-gray-900">
+    <section id="trayectoria" className="py-20 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
-          <h2 className="text-4xl sm:text-5xl font-bold text-gray-900 dark:text-white mb-4">
+          <h2 className="text-4xl sm:text-5xl font-bold text-gray-900 mb-4">
             Trayectoria Profesional
           </h2>
           <div className="w-24 h-1 bg-gradient-to-r from-red-600 to-red-400 mx-auto mb-6"></div>
-          <p className="text-xl text-gray-600 dark:text-gray-300 max-w-4xl mx-auto leading-relaxed">
+          <p className="text-xl text-gray-600 max-w-4xl mx-auto leading-relaxed">
             Más de 20 años de experiencia en el sector público
           </p>
         </div>
 
         <div className="relative">
           {/* Línea central */}
-          <div className="absolute left-1/2 transform -translate-x-1/2 h-full w-1 bg-gradient-to-b from-red-600 via-red-400 to-gray-200 dark:to-gray-700 hidden md:block"></div>
+          <div className="absolute left-1/2 transform -translate-x-1/2 h-full w-1 bg-gradient-to-b from-red-600 via-red-400 to-gray-200 hidden md:block"></div>
 
           <div className="space-y-8">
             {trayectoria.map((item, index) => (
@@ -81,18 +81,18 @@ export default function TrayectoriaSection() {
               >
                 {/* Contenido */}
                 <div className={`flex-1 ${index % 2 === 0 ? "md:text-right md:pr-8" : "md:text-left md:pl-8"}`}>
-                  <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 border-l-4 border-red-600 md:border-l-0 md:border-none hover:shadow-xl transition-shadow duration-300">
+                  <div className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-red-600 md:border-l-0 md:border-none hover:shadow-xl transition-shadow duration-300">
                     <div className={`flex items-center gap-2 mb-2 ${index % 2 === 0 ? "md:justify-end" : "md:justify-start"}`}>
                       <Calendar className="h-4 w-4 text-red-600" />
                       <span className="text-red-600 font-bold">{item.año}</span>
                     </div>
-                    <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-1">
+                    <h3 className="text-xl font-bold text-gray-900 mb-1">
                       {item.cargo}
                     </h3>
-                    <p className="text-gray-600 dark:text-gray-400 font-medium mb-2">
+                    <p className="text-gray-600 font-medium mb-2">
                       {item.institucion}
                     </p>
-                    <p className="text-gray-500 dark:text-gray-400 text-sm">
+                    <p className="text-gray-500 text-sm">
                       {item.descripcion}
                     </p>
                   </div>

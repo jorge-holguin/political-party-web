@@ -122,14 +122,14 @@ export default function PrensaSection() {
   }, [isModalOpen]);
 
   return (
-    <section id="prensa" className="py-20 bg-gray-50 dark:bg-gray-800">
+    <section id="prensa" className="py-20 bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
-          <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
+          <h2 className="text-4xl font-bold text-gray-900 mb-4">
             Prensa y Noticias
           </h2>
           <div className="w-24 h-1 bg-gradient-to-r from-red-600 to-red-400 mx-auto mb-6"></div>
-          <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
             Mantente informado sobre nuestras actividades, propuestas y eventos
           </p>
         </div>
@@ -139,15 +139,15 @@ export default function PrensaSection() {
           {/* Botones de navegación */}
           <button
             onClick={() => scroll("left")}
-            className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white dark:bg-gray-700 shadow-lg rounded-full p-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300 hover:bg-gray-100 dark:hover:bg-gray-600 -translate-x-4"
+            className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white shadow-lg rounded-full p-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300 hover:bg-gray-100 -translate-x-4"
           >
-            <ChevronLeft className="h-6 w-6 text-gray-700 dark:text-white" />
+            <ChevronLeft className="h-6 w-6 text-gray-700" />
           </button>
           <button
             onClick={() => scroll("right")}
-            className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white dark:bg-gray-700 shadow-lg rounded-full p-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300 hover:bg-gray-100 dark:hover:bg-gray-600 translate-x-4"
+            className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white shadow-lg rounded-full p-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300 hover:bg-gray-100 translate-x-4"
           >
-            <ChevronRight className="h-6 w-6 text-gray-700 dark:text-white" />
+            <ChevronRight className="h-6 w-6 text-gray-700" />
           </button>
 
           {/* Carrusel */}
@@ -163,7 +163,7 @@ export default function PrensaSection() {
             {noticiasEjemplo.map((noticia) => (
               <div
                 key={noticia.id}
-                className="flex-none w-80 bg-white dark:bg-gray-700 rounded-xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-xl hover:scale-[1.02] select-none"
+                className="flex-none w-80 bg-white rounded-xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-xl hover:scale-[1.02] select-none"
                 onClick={() => handleNoticiaClick(noticia)}
               >
                 <div className="relative h-48 bg-gradient-to-br from-red-500 to-red-700">
@@ -175,24 +175,24 @@ export default function PrensaSection() {
                     draggable={false}
                   />
                   <div className="absolute inset-0 flex items-center justify-center">
-                    <span className="bg-white/90 dark:bg-gray-800/90 text-red-600 px-4 py-2 rounded-full text-sm font-semibold">
+                    <span className="bg-white/90 text-red-600 px-4 py-2 rounded-full text-sm font-semibold">
                       {noticia.categoria}
                     </span>
                   </div>
                 </div>
                 <div className="p-5">
-                  <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2 line-clamp-2">
+                  <h3 className="text-lg font-bold text-gray-900 mb-2 line-clamp-2">
                     {noticia.titulo}
                   </h3>
-                  <p className="text-gray-600 dark:text-gray-300 text-sm mb-4 line-clamp-3">
+                  <p className="text-gray-600 text-sm mb-4 line-clamp-3">
                     {noticia.resumen}
                   </p>
-                  <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
+                  <div className="flex items-center justify-between text-xs text-gray-500">
                     <div className="flex items-center gap-1">
                       <Calendar className="h-3 w-3" />
                       <span>{new Date(noticia.fecha).toLocaleDateString("es-PE")}</span>
                     </div>
-                    <div className="flex items-center gap-1 text-red-600 dark:text-red-400 font-medium">
+                    <div className="flex items-center gap-1 text-red-600 font-medium">
                       <span>Leer más</span>
                       <ArrowRight className="h-3 w-3" />
                     </div>
@@ -202,7 +202,7 @@ export default function PrensaSection() {
             ))}
           </div>
 
-          <p className="text-center text-sm text-gray-500 dark:text-gray-400 mt-4">
+          <p className="text-center text-sm text-gray-500 mt-4">
             ← Arrastra para ver más noticias →
           </p>
         </div>
@@ -215,7 +215,7 @@ export default function PrensaSection() {
           onClick={handleCloseModal}
         >
           <div
-            className="bg-white dark:bg-gray-800 rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl animate-scaleIn"
+            className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl animate-scaleIn"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="relative h-64 bg-gradient-to-br from-red-500 to-red-700">
@@ -227,12 +227,12 @@ export default function PrensaSection() {
               />
               <button
                 onClick={handleCloseModal}
-                className="absolute top-4 right-4 bg-white/90 dark:bg-gray-800/90 rounded-full p-2 hover:bg-white dark:hover:bg-gray-700 transition-colors"
+                className="absolute top-4 right-4 bg-white/90 rounded-full p-2 hover:bg-white transition-colors"
               >
-                <X className="h-5 w-5 text-gray-700 dark:text-white" />
+                <X className="h-5 w-5 text-gray-700" />
               </button>
               <div className="absolute bottom-6 left-6 right-6">
-                <span className="inline-block bg-white/90 dark:bg-gray-800/90 text-red-600 px-3 py-1 rounded-full text-sm font-semibold mb-3">
+                <span className="inline-block bg-white/90 text-red-600 px-3 py-1 rounded-full text-sm font-semibold mb-3">
                   {selectedNoticia.categoria}
                 </span>
                 <h2 className="text-2xl md:text-3xl font-bold text-white drop-shadow-lg">
@@ -242,12 +242,12 @@ export default function PrensaSection() {
             </div>
 
             <div className="p-6">
-              <div className="flex items-center gap-4 mb-6 pb-4 border-b border-gray-200 dark:border-gray-700">
-                <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+              <div className="flex items-center gap-4 mb-6 pb-4 border-b border-gray-200">
+                <div className="flex items-center gap-2 text-sm text-gray-600">
                   <User className="h-4 w-4" />
                   <span>{selectedNoticia.autor}</span>
                 </div>
-                <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+                <div className="flex items-center gap-2 text-sm text-gray-600">
                   <Calendar className="h-4 w-4" />
                   <span>
                     {new Date(selectedNoticia.fecha).toLocaleDateString("es-PE", {
@@ -259,13 +259,13 @@ export default function PrensaSection() {
                 </div>
               </div>
 
-              <div className="prose prose-lg dark:prose-invert max-w-none">
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
+              <div className="prose prose-lg max-w-none">
+                <p className="text-gray-700 leading-relaxed">
                   {selectedNoticia.contenido}
                 </p>
               </div>
 
-              <div className="mt-8 pt-6 border-t border-gray-200 dark:border-gray-700">
+              <div className="mt-8 pt-6 border-t border-gray-200">
                 <button
                   onClick={handleCloseModal}
                   className="w-full bg-red-600 text-white py-3 rounded-lg font-semibold hover:bg-red-700 transition-colors"

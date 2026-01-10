@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import { ThemeProvider } from "@/components/ThemeProvider";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -14,6 +13,8 @@ export const metadata: Metadata = {
   keywords: ["Todo con el Pueblo", "TCP", "Nicolás Bustamante", "partido político", "Perú"],
   icons: {
     icon: "/images/logos/logo.png",
+    shortcut: "/images/logos/logo.png",
+    apple: "/images/logos/logo.png",
   },
 };
 
@@ -23,16 +24,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="es" suppressHydrationWarning>
-      <body className={`${inter.variable} font-sans antialiased`}>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="light"
-          enableSystem
-          disableTransitionOnChange
-        >
-          {children}
-        </ThemeProvider>
+    <html lang="es">
+      <head>
+        <link rel="icon" href="/images/logos/logo.png" type="image/png" />
+      </head>
+      <body className={`${inter.variable} font-sans antialiased bg-white text-gray-900`}>
+        {children}
       </body>
     </html>
   );

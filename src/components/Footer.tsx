@@ -29,13 +29,13 @@ export default function Footer() {
           {/* Columna 1: Logo */}
           <div className="flex flex-col items-center md:items-start">
             <Link href="/" onClick={() => scrollToSection("inicio")}>
-              <div className="w-28 h-28 bg-white rounded-full flex items-center justify-center shadow-xl hover:shadow-2xl transition-shadow duration-300 p-2">
+              <div className="w-32 h-20 bg-white rounded-xl flex items-center justify-center shadow-xl hover:shadow-2xl transition-shadow duration-300 p-2">
                 <Image 
                   src="/images/logos/logo.png" 
                   alt="Todo con el Pueblo" 
-                  width={80} 
-                  height={80}
-                  className="rounded-full"
+                  width={120} 
+                  height={70}
+                  className="rounded-lg object-contain"
                 />
               </div>
             </Link>

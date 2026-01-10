@@ -59,14 +59,14 @@ export default function ContactoSection() {
   ];
 
   return (
-    <section id="contacto" className="py-16 bg-gray-100 dark:bg-gray-900">
+    <section id="contacto" className="py-16 bg-gray-100">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-10">
-          <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+          <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
             Contáctanos
           </h2>
           <div className="w-24 h-1 bg-red-600 mx-auto mb-6"></div>
-          <p className="text-lg text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+          <p className="text-lg text-gray-600 max-w-3xl mx-auto">
             ¿Tienes alguna consulta o sugerencia? Estamos aquí para escucharte.
           </p>
         </div>
@@ -150,28 +150,28 @@ export default function ContactoSection() {
           {/* Formulario */}
           <div>
             {submitSuccess ? (
-              <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-2xl p-8 text-center h-full flex flex-col items-center justify-center">
+              <div className="bg-green-50 border border-green-200 rounded-2xl p-8 text-center h-full flex flex-col items-center justify-center">
                 <CheckCircle className="h-16 w-16 text-green-500 mb-4" />
-                <h3 className="text-2xl font-bold text-green-800 dark:text-green-400 mb-2">
+                <h3 className="text-2xl font-bold text-green-800 mb-2">
                   ¡Mensaje Enviado!
                 </h3>
-                <p className="text-green-600 dark:text-green-300">
+                <p className="text-green-600">
                   Gracias por contactarnos. Te responderemos pronto.
                 </p>
               </div>
             ) : (
               <form
                 onSubmit={handleSubmit(onSubmit)}
-                className="bg-gray-50 dark:bg-gray-800 rounded-2xl p-8 shadow-lg"
+                className="bg-white rounded-2xl p-8 shadow-lg"
               >
                 <div className="space-y-6">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
                       Nombre completo
                     </label>
                     <input
                       {...register("nombre", { required: true })}
-                      className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                      className="w-full px-4 py-3 rounded-lg border border-gray-300 bg-white text-gray-900 focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all"
                       placeholder="Tu nombre"
                     />
                     {errors.nombre && (
@@ -182,7 +182,7 @@ export default function ContactoSection() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
                       Correo electrónico
                     </label>
                     <input
@@ -190,7 +190,7 @@ export default function ContactoSection() {
                         required: true,
                         pattern: /^\S+@\S+$/i,
                       })}
-                      className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                      className="w-full px-4 py-3 rounded-lg border border-gray-300 bg-white text-gray-900 focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all"
                       placeholder="tu@email.com"
                     />
                     {errors.email && (
@@ -201,13 +201,13 @@ export default function ContactoSection() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
                       Mensaje
                     </label>
                     <textarea
                       {...register("mensaje", { required: true })}
                       rows={5}
-                      className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none"
+                      className="w-full px-4 py-3 rounded-lg border border-gray-300 bg-white text-gray-900 focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all resize-none"
                       placeholder="¿En qué podemos ayudarte?"
                     />
                     {errors.mensaje && (

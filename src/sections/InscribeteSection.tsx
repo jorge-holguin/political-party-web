@@ -75,21 +75,21 @@ export default function InscribeteSection() {
           </p>
         </div>
 
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-8">
+        <div className="bg-white rounded-2xl shadow-2xl p-6 sm:p-8">
           {submitStatus === 'success' && (
-            <div className="mb-6 p-4 bg-green-100 border border-green-400 text-green-700 rounded">
+            <div className="mb-6 p-4 bg-green-100 border border-green-400 text-green-700 rounded-lg">
               ¡Tu inscripción ha sido recibida exitosamente! Nos pondremos en contacto contigo pronto.
             </div>
           )}
 
           {submitStatus === 'error' && (
-            <div className="mb-6 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
+            <div className="mb-6 p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg">
               Ha ocurrido un error. Por favor, intenta nuevamente.
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <form onSubmit={handleSubmit} className="space-y-5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
               <div>
                 <label htmlFor="nombre" className="block text-sm font-medium text-gray-700 mb-2">
                   Nombre *
@@ -101,7 +101,8 @@ export default function InscribeteSection() {
                   value={formData.nombre}
                   onChange={handleInputChange}
                   required
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 bg-white text-gray-900 transition-colors"
+                  placeholder="Tu nombre"
                 />
               </div>
 
@@ -116,7 +117,8 @@ export default function InscribeteSection() {
                   value={formData.apellido}
                   onChange={handleInputChange}
                   required
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 bg-white text-gray-900 transition-colors"
+                  placeholder="Tu apellido"
                 />
               </div>
             </div>
@@ -132,11 +134,12 @@ export default function InscribeteSection() {
                 value={formData.email}
                 onChange={handleInputChange}
                 required
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 bg-white text-gray-900 transition-colors"
+                placeholder="correo@ejemplo.com"
               />
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
               <div>
                 <label htmlFor="telefono" className="block text-sm font-medium text-gray-700 mb-2">
                   Teléfono
@@ -147,7 +150,8 @@ export default function InscribeteSection() {
                   name="telefono"
                   value={formData.telefono}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 bg-white text-gray-900 transition-colors"
+                  placeholder="999 999 999"
                 />
               </div>
 
@@ -162,7 +166,8 @@ export default function InscribeteSection() {
                   value={formData.dni}
                   onChange={handleInputChange}
                   required
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 bg-white text-gray-900 transition-colors"
+                  placeholder="12345678"
                 />
               </div>
             </div>
@@ -177,9 +182,9 @@ export default function InscribeteSection() {
                 name="ficha"
                 onChange={handleFileChange}
                 accept=".pdf,.jpg,.jpeg,.png"
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 bg-white text-gray-900 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-red-50 file:text-red-700 hover:file:bg-red-100 transition-colors"
               />
-              <p className="text-sm text-gray-500 mt-1">
+              <p className="text-sm text-gray-500 mt-2">
                 Sube tu ficha de inscripción completada
               </p>
             </div>

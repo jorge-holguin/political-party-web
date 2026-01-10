@@ -4,8 +4,7 @@ import { useState, useEffect } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { usePathname } from "next/navigation"
-import { Menu, X, Sun, Moon } from "lucide-react"
-import { useTheme } from "next-themes"
+import { Menu, X } from "lucide-react"
 
 const navItems = [
   { name: "Inicio", path: "/", anchor: "#inicio" },
@@ -18,19 +17,14 @@ const navItems = [
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false)
-  const [mounted, setMounted] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const [activeSection, setActiveSection] = useState("inicio")
-  const { theme, setTheme } = useTheme()
   const pathname = usePathname()
 
   useEffect(() => {
-    setMounted(true)
-
     const handleScroll = () => {
       setScrolled(window.scrollY > 50)
 
-      // Detectar sección activa
       const sections = ["inicio", "biografia", "trayectoria", "prensa", "inscribete", "contacto"]
       for (const section of sections) {
         const element = document.getElementById(section)
@@ -62,8 +56,8 @@ export default function Navbar() {
   return (
     <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
       scrolled 
-        ? "bg-white/95 dark:bg-gray-900/95 backdrop-blur-md shadow-lg" 
-        : "bg-white/90 dark:bg-gray-900/90"
+        ? "bg-white/95 backdrop-blur-md shadow-lg" 
+        : "bg-white"
     }`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
@@ -72,11 +66,11 @@ export default function Navbar() {
               <Image 
                 src="/images/logos/logo.png" 
                 alt="Todo con el Pueblo" 
-                width={40} 
-                height={40}
-                className="rounded-full"
+                width={48} 
+                height={48}
+                className="rounded-lg object-contain bg-white p-1"
               />
-              <span className="hidden sm:block font-bold text-red-600 dark:text-red-500">
+              <span className="hidden sm:block font-bold text-red-600">
                 TCP
               </span>
             </Link>
@@ -100,7 +94,7 @@ export default function Navbar() {
                     className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ${
                       isActive
                         ? "bg-red-600 text-white shadow-md"
-                        : "text-gray-700 hover:bg-blue-800 hover:text-white dark:text-gray-300"
+                        : "text-gray-700 hover:bg-red-600 hover:text-white"
                     }`}
                   >
                     {item.name}
@@ -109,25 +103,10 @@ export default function Navbar() {
               })}
             </div>
           </div>
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-              className="p-2 rounded-full transition-all duration-300 text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700"
-              aria-label="Toggle theme"
-            >
-              {mounted ? (
-                theme === "dark" ? (
-                  <Sun className="h-5 w-5" />
-                ) : (
-                  <Moon className="h-5 w-5" />
-                )
-              ) : (
-                <div className="h-5 w-5" />
-              )}
-            </button>
+          <div className="flex items-center">
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="md:hidden p-2 rounded-full transition-all duration-300 text-gray-600 hover:bg-gray-100 dark:text-gray-300"
+              className="md:hidden p-2 rounded-full transition-all duration-300 text-gray-600 hover:bg-gray-100"
             >
               {isOpen ? (
                 <X className="h-6 w-6" aria-hidden="true" />
@@ -143,7 +122,7 @@ export default function Navbar() {
       <div className={`md:hidden transition-all duration-300 overflow-hidden ${
         isOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
       }`}>
-        <div className="px-4 py-3 space-y-2 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md border-t dark:border-gray-700">
+        <div className="px-4 py-3 space-y-2 bg-white backdrop-blur-md border-t border-gray-200">
           {navItems.map((item) => {
             const sectionId = item.anchor.replace("#", "")
             const isActive = isHomePage && activeSection === sectionId
@@ -161,7 +140,7 @@ export default function Navbar() {
                 className={`block w-full text-left px-4 py-3 rounded-lg text-base font-medium transition-all duration-300 ${
                   isActive
                     ? "bg-red-600 text-white"
-                    : "text-gray-700 hover:bg-blue-800 hover:text-white dark:text-gray-300"
+                    : "text-gray-700 hover:bg-red-600 hover:text-white"
                 }`}
               >
                 {item.name}
