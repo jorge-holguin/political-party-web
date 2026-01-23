@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { MapPin, Mail, Phone } from "lucide-react";
+import { MapPin, Mail, Phone, FileText } from "lucide-react";
 
 export default function Footer() {
   const scrollToSection = (id: string) => {
@@ -16,15 +16,25 @@ export default function Footer() {
     { name: "Inicio", anchor: "inicio" },
     { name: "Biografía", anchor: "biografia" },
     { name: "Trayectoria", anchor: "trayectoria" },
+    { name: "Comités", href: "/comites" },
     { name: "Prensa", anchor: "prensa" },
-    { name: "Inscríbete", anchor: "inscribete" },
+    { name: "Afiliados", href: "/afiliados" },
     { name: "Contacto", anchor: "contacto" },
+  ];
+
+  const documentosInstitucionales = [
+    { name: "Ideario Político", hash: "ideario-politico" },
+    { name: "Estatuto", hash: "estatuto" },
+    { name: "Reglamentos", hash: "reglamentos" },
+    { name: "Directivos", hash: "directivos" },
+    { name: "Actas de Fundación", hash: "actas-fundacion" },
+    { name: "Símbolo del Partido", hash: "simbolo" },
   ];
 
   return (
     <footer className="bg-gradient-to-b from-gray-900 to-black text-white py-16">
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-12 items-start">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 items-start">
           
           {/* Columna 1: Logo */}
           <div className="flex flex-col items-center md:items-start">
@@ -52,20 +62,51 @@ export default function Footer() {
             <h3 className="text-lg font-bold mb-6 text-white">Enlaces rápidos</h3>
             <ul className="space-y-3">
               {quickLinks.map((link) => (
-                <li key={link.anchor}>
-                  <button
-                    onClick={() => scrollToSection(link.anchor)}
-                    className="text-gray-300 hover:text-white hover:translate-x-1 transition-all duration-300 inline-flex items-center gap-2"
-                  >
-                    <span className="w-1.5 h-1.5 bg-red-500 rounded-full"></span>
-                    {link.name}
-                  </button>
+                <li key={link.name}>
+                  {link.href ? (
+                    <Link
+                      href={link.href}
+                      className="text-gray-300 hover:text-white hover:translate-x-1 transition-all duration-300 inline-flex items-center gap-2"
+                    >
+                      <span className="w-1.5 h-1.5 bg-red-500 rounded-full"></span>
+                      {link.name}
+                    </Link>
+                  ) : (
+                    <button
+                      onClick={() => scrollToSection(link.anchor!)}
+                      className="text-gray-300 hover:text-white hover:translate-x-1 transition-all duration-300 inline-flex items-center gap-2"
+                    >
+                      <span className="w-1.5 h-1.5 bg-red-500 rounded-full"></span>
+                      {link.name}
+                    </button>
+                  )}
                 </li>
               ))}
             </ul>
           </div>
 
-          {/* Columna 3: Contacto */}
+          {/* Columna 3: Documentos Institucionales */}
+          <div className="text-center md:text-left">
+            <h3 className="text-lg font-bold mb-6 text-white flex items-center gap-2 justify-center md:justify-start">
+              <FileText className="h-5 w-5 text-red-500" />
+              Documentos
+            </h3>
+            <ul className="space-y-3">
+              {documentosInstitucionales.map((doc) => (
+                <li key={doc.hash}>
+                  <a
+                    href={`/#${doc.hash}`}
+                    className="text-gray-300 hover:text-white hover:translate-x-1 transition-all duration-300 inline-flex items-center gap-2"
+                  >
+                    <span className="w-1.5 h-1.5 bg-red-500 rounded-full"></span>
+                    {doc.name}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Columna 4: Contacto */}
           <div className="text-center md:text-left">
             <h3 className="text-lg font-bold mb-6 text-white">Contacto</h3>
             <div className="space-y-4">

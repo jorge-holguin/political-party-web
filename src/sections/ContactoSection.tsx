@@ -49,7 +49,7 @@ export default function ContactoSection() {
     {
       icon: Mail,
       title: "Email",
-      content: "contacto@todoconelpueblo.pe",
+      content: "todoconelpueblotcp@gmail.com",
     },
     {
       icon: Phone,
