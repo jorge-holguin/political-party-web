@@ -7,17 +7,13 @@ import { usePathname } from "next/navigation"
 import { Menu, X, ChevronDown } from "lucide-react"
 
 const navItems = [
-  { name: "Inicio", anchor: "#inicio" },
-  { name: "Biografía", anchor: "#biografia" },
-  { name: "Trayectoria", anchor: "#trayectoria" },
-  { name: "Comités", href: "/comites" },
-  { name: "Prensa", anchor: "#prensa" },
-  { name: "Contacto", anchor: "#contacto" },
-]
-
-const uneteItems = [
-  { name: "Inscríbete", anchor: "#inscribete" },
-  { name: "Afiliados", href: "/afiliados" },
+  { name: "Inicio", path: "/", anchor: "#inicio" },
+  { name: "Biografía", path: "/", anchor: "#biografia" },
+  { name: "Trayectoria", path: "/", anchor: "#trayectoria" },
+  { name: "Prensa", path: "/", anchor: "#prensa" },
+  { name: "Galería", path: "/", anchor: "#contenido" },
+  { name: "Inscríbete", path: "/", anchor: "#inscribete" },
+  { name: "Contacto", path: "/", anchor: "#contacto" },
 ]
 
 export default function Navbar() {
@@ -32,7 +28,7 @@ export default function Navbar() {
     const handleScroll = () => {
       setScrolled(window.scrollY > 50)
 
-      const sections = ["inicio", "biografia", "trayectoria", "prensa", "inscribete", "contacto"]
+      const sections = ["inicio", "biografia", "trayectoria", "prensa", "contenido", "inscribete", "contacto"]
       for (const section of sections) {
         const element = document.getElementById(section)
         if (element) {

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { MapPin, Mail, Phone, FileText } from "lucide-react";
+import { MapPin, Mail, Phone } from "lucide-react";
 
 export default function Footer() {
   const scrollToSection = (id: string) => {
@@ -18,7 +18,7 @@ export default function Footer() {
     { name: "Trayectoria", anchor: "trayectoria" },
     { name: "Comités", href: "/comites" },
     { name: "Prensa", anchor: "prensa" },
-    { name: "Afiliados", href: "/afiliados" },
+    { name: "Inscríbete", anchor: "inscribete" },
     { name: "Contacto", anchor: "contacto" },
   ];
 
@@ -128,8 +128,15 @@ export default function Footer() {
           </div>
         </div>
 
+        {/* Contador de visitas */}
+        <div className="mt-12 pt-8 border-t border-gray-800">
+          <div className="mb-6">
+            <VisitCounter />
+          </div>
+        </div>
+
         {/* Línea divisoria y derechos reservados */}
-        <div className="mt-12 pt-8 border-t border-gray-800 flex flex-col md:flex-row justify-between items-center gap-4">
+        <div className="pt-6 border-t border-gray-800 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-sm text-gray-400">
             © {new Date().getFullYear()} Todo con el Pueblo (TCP). Todos los derechos reservados.
           </p>
