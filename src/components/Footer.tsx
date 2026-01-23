@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { MapPin, Mail, Phone } from "lucide-react";
+import { MapPin, Mail, Phone, FileText } from "lucide-react";
+import VisitCounter from "./VisitCounter";
 
 export default function Footer() {
   const scrollToSection = (id: string) => {

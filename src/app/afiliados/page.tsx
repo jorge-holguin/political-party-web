@@ -1,370 +1,461 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
-import Image from "next/image";
 import { 
-  ArrowLeft, 
   Download, 
   FileText, 
   CheckCircle, 
   Users, 
-  Shield,
-  ClipboardList,
-  ArrowRight
+  Heart, 
+  Shield, 
+  Star,
+  ArrowRight,
+  AlertCircle
 } from "lucide-react";
+
+interface Requisito {
+  titulo: string;
+  descripcion: string;
+}
+
+const requisitos: Requisito[] = [
+  {
+    titulo: "Ser ciudadano peruano",
+    descripcion: "Mayor de 18 años con DNI vigente"
+  },
+  {
+    titulo: "No pertenecer a otro partido",
+    descripcion: "Declaración jurada de no afiliación a otra organización política"
+  },
+  {
+    titulo: "Aceptar el ideario",
+    descripcion: "Comprometerse con los principios y valores del partido"
+  },
+  {
+    titulo: "Llenar ficha de afiliación",
+    descripcion: "Completar el formulario oficial con datos verídicos"
+  }
+];
+
+const beneficios = [
+  {
+    icono: <Users className="h-8 w-8" />,
+    titulo: "Participación Activa",
+    descripcion: "Voz y voto en las decisiones del partido"
+  },
+  {
+    icono: <Heart className="h-8 w-8" />,
+    titulo: "Comunidad",
+    descripcion: "Forma parte de una red de ciudadanos comprometidos"
+  },
+  {
+    icono: <Shield className="h-8 w-8" />,
+    titulo: "Representación",
+    descripcion: "Tus intereses serán defendidos a nivel nacional"
+  },
+  {
+    icono: <Star className="h-8 w-8" />,
+    titulo: "Oportunidades",
+    descripcion: "Acceso a formación política y cargos partidarios"
+  }
+];
 
 export default function AfiliadosPage() {
   const [formData, setFormData] = useState({
     nombres: "",
     apellidos: "",
     dni: "",
+    fechaNacimiento: "",
     email: "",
     telefono: "",
     departamento: "",
-    aceptaTerminos: false,
+    provincia: "",
+    distrito: "",
+    direccion: "",
+    ocupacion: "",
+    aceptaTerminos: false
   });
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitSuccess, setSubmitSuccess] = useState(false);
+  const [enviando, setEnviando] = useState(false);
+  const [enviado, setEnviado] = useState(false);
+  const [error, setError] = useState("");
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value, type } = e.target;
+    setFormData({
+      ...formData,
+      [name]: type === "checkbox" ? (e.target as HTMLInputElement).checked : value
+    });
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSubmitting(true);
+    setEnviando(true);
+    setError("");
+
+    if (!formData.aceptaTerminos) {
+      setError("Debes aceptar los términos y condiciones");
+      setEnviando(false);
+      return;
+    }
+
+    // Simulación de envío
+    await new Promise(resolve => setTimeout(resolve, 2000));
     
-    // Simular envío
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    
-    setSubmitSuccess(true);
-    setIsSubmitting(false);
+    setEnviando(false);
+    setEnviado(true);
   };
 
-  const requisitos = [
-    "Ser ciudadano peruano mayor de 18 años",
-    "Gozar de derechos civiles y políticos",
-    "No estar afiliado a otro partido político",
-    "Aceptar el ideario y estatuto del partido",
-    "Presentar DNI vigente",
-  ];
-
-  const beneficios = [
-    {
-      icon: Users,
-      title: "Participación Activa",
-      description: "Participa en las decisiones del partido y en la elección de candidatos.",
-    },
-    {
-      icon: Shield,
-      title: "Representación",
-      description: "Sé parte de un movimiento que lucha por los intereses del pueblo.",
-    },
-    {
-      icon: ClipboardList,
-      title: "Postulación",
-      description: "Posibilidad de postular a cargos de representación popular.",
-    },
-  ];
-
   const departamentos = [
-    "Amazonas", "Áncash", "Apurímac", "Arequipa", "Ayacucho",
-    "Cajamarca", "Callao", "Cusco", "Huancavelica", "Huánuco",
-    "Ica", "Junín", "La Libertad", "Lambayeque", "Lima",
-    "Loreto", "Madre de Dios", "Moquegua", "Pasco", "Piura",
-    "Puno", "San Martín", "Tacna", "Tumbes", "Ucayali"
+    "Amazonas", "Áncash", "Apurímac", "Arequipa", "Ayacucho", "Cajamarca",
+    "Callao", "Cusco", "Huancavelica", "Huánuco", "Ica", "Junín", "La Libertad",
+    "Lambayeque", "Lima", "Loreto", "Madre de Dios", "Moquegua", "Pasco",
+    "Piura", "Puno", "San Martín", "Tacna", "Tumbes", "Ucayali"
   ];
+
+  if (enviado) {
+    return (
+      <div className="pt-20 min-h-screen bg-gradient-to-b from-gray-50 to-white flex items-center justify-center">
+        <div className="max-w-md mx-auto px-6 text-center">
+          <div className="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
+            <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+              <CheckCircle className="h-10 w-10 text-green-600" />
+            </div>
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">
+              ¡Solicitud Enviada!
+            </h2>
+            <p className="text-gray-600 mb-6">
+              Hemos recibido tu solicitud de afiliación. Nuestro equipo la revisará 
+              y te contactaremos pronto para los siguientes pasos.
+            </p>
+            <a
+              href="/pages/inicio"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-red-600 text-white rounded-full font-medium hover:bg-red-700 transition-colors"
+            >
+              Volver al Inicio
+              <ArrowRight className="h-4 w-4" />
+            </a>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-white to-gray-50">
+    <div className="pt-20 min-h-screen bg-gradient-to-b from-gray-50 to-white">
       {/* Header */}
-      <header className="bg-white shadow-sm sticky top-0 z-40">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center justify-between">
-            <Link 
-              href="/" 
-              className="flex items-center gap-2 text-gray-600 hover:text-red-600 transition-colors"
-            >
-              <ArrowLeft className="h-5 w-5" />
-              <span className="font-medium">Volver al inicio</span>
-            </Link>
-            <Link href="/" className="flex items-center gap-2">
-              <Image
-                src="/images/logos/logo.png"
-                alt="TCP"
-                width={40}
-                height={40}
-                className="rounded-lg object-contain"
-              />
-              <span className="font-bold text-red-600 hidden sm:block">TCP</span>
-            </Link>
-          </div>
-        </div>
-      </header>
-
-      {/* Hero */}
-      <section className="bg-gradient-to-r from-red-600 to-red-700 py-12 md:py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4">
-            Afíliate a TCP
+      <div className="bg-gradient-to-r from-red-600 to-red-700 text-white py-16">
+        <div className="max-w-7xl mx-auto px-6">
+          <h1 className="text-4xl md:text-5xl font-bold mb-4">
+            Afiliación al Partido
           </h1>
-          <p className="text-red-100 text-lg md:text-xl max-w-2xl mx-auto">
-            Únete a nuestro movimiento y sé parte del cambio que el Perú necesita.
+          <p className="text-xl text-red-100 max-w-2xl">
+            Únete a Todo con el Pueblo y sé parte del cambio que el Perú necesita. 
+            Tu participación es fundamental para construir un mejor país.
           </p>
         </div>
-      </section>
+      </div>
 
-      {/* Descarga de Ficha */}
-      <section className="py-12 bg-white border-b border-gray-100">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl p-6 md:p-8 flex flex-col md:flex-row items-center gap-6">
-            <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center flex-shrink-0">
-              <FileText className="h-10 w-10 text-red-600" />
+      <div className="max-w-7xl mx-auto px-6 py-12">
+        {/* Descarga de ficha */}
+        <div className="bg-white rounded-2xl shadow-xl p-8 border border-gray-100 mb-12">
+          <div className="flex flex-col md:flex-row items-center gap-6">
+            <div className="p-4 bg-red-100 rounded-2xl">
+              <FileText className="h-12 w-12 text-red-600" />
             </div>
-            <div className="flex-grow text-center md:text-left">
-              <h2 className="text-xl md:text-2xl font-bold text-gray-900 mb-2">
+            <div className="flex-1 text-center md:text-left">
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">
                 Descarga la Ficha de Afiliación
               </h2>
-              <p className="text-gray-600 mb-4">
-                Descarga el formulario oficial, complétalo y preséntalo en el comité más cercano 
-                junto con una copia de tu DNI.
+              <p className="text-gray-600">
+                Descarga el formulario oficial, complétalo y preséntalo en tu comité más cercano.
               </p>
-              <a
-                href="/documentos/ficha-afiliacion-tcp.pdf"
-                download
-                className="inline-flex items-center gap-2 bg-red-600 text-white px-6 py-3 rounded-lg hover:bg-red-700 transition-colors font-semibold"
-              >
-                <Download className="h-5 w-5" />
-                Descargar Ficha PDF
-              </a>
             </div>
+            <a
+              href="/documentos/ficha-afiliacion-tcp.pdf"
+              download
+              className="flex items-center gap-2 px-8 py-4 bg-red-600 text-white rounded-xl font-semibold hover:bg-red-700 transition-colors"
+            >
+              <Download className="h-5 w-5" />
+              Descargar PDF
+            </a>
           </div>
         </div>
-      </section>
 
-      {/* Requisitos y Beneficios */}
-      <section className="py-12 md:py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid md:grid-cols-2 gap-8 lg:gap-12">
+        <div className="grid lg:grid-cols-3 gap-12">
+          {/* Columna izquierda: Requisitos y beneficios */}
+          <div className="lg:col-span-1 space-y-8">
             {/* Requisitos */}
-            <div className="bg-white rounded-2xl shadow-lg p-6 md:p-8">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-                <ClipboardList className="h-6 w-6 text-red-600" />
-                Requisitos
-              </h2>
-              <ul className="space-y-4">
+            <div className="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
+              <h3 className="text-xl font-bold text-gray-900 mb-6">Requisitos</h3>
+              <div className="space-y-4">
                 {requisitos.map((req, index) => (
-                  <li key={index} className="flex items-start gap-3">
-                    <CheckCircle className="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5" />
-                    <span className="text-gray-700">{req}</span>
-                  </li>
+                  <div key={index} className="flex items-start gap-3">
+                    <CheckCircle className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
+                    <div>
+                      <p className="font-medium text-gray-900">{req.titulo}</p>
+                      <p className="text-sm text-gray-500">{req.descripcion}</p>
+                    </div>
+                  </div>
                 ))}
-              </ul>
+              </div>
             </div>
 
             {/* Beneficios */}
-            <div className="bg-white rounded-2xl shadow-lg p-6 md:p-8">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-                <Shield className="h-6 w-6 text-red-600" />
-                Beneficios
-              </h2>
+            <div className="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
+              <h3 className="text-xl font-bold text-gray-900 mb-6">Beneficios</h3>
               <div className="space-y-6">
-                {beneficios.map((beneficio, index) => (
+                {beneficios.map((ben, index) => (
                   <div key={index} className="flex items-start gap-4">
-                    <div className="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                      <beneficio.icon className="h-6 w-6 text-red-600" />
+                    <div className="p-2 bg-red-100 rounded-lg text-red-600 flex-shrink-0">
+                      {ben.icono}
                     </div>
                     <div>
-                      <h3 className="font-semibold text-gray-900">{beneficio.title}</h3>
-                      <p className="text-sm text-gray-600">{beneficio.description}</p>
+                      <p className="font-medium text-gray-900">{ben.titulo}</p>
+                      <p className="text-sm text-gray-500">{ben.descripcion}</p>
                     </div>
                   </div>
                 ))}
               </div>
             </div>
           </div>
-        </div>
-      </section>
 
-      {/* Formulario de Pre-registro */}
-      <section className="py-12 md:py-16 bg-gray-50">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-10">
-            <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">
-              Pre-registro en Línea
-            </h2>
-            <p className="text-gray-600">
-              Completa el formulario y nos pondremos en contacto contigo para finalizar tu afiliación.
-            </p>
-          </div>
-
-          {submitSuccess ? (
-            <div className="bg-white rounded-2xl shadow-lg p-8 text-center">
-              <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                <CheckCircle className="h-10 w-10 text-green-500" />
-              </div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-2">
-                ¡Pre-registro Exitoso!
-              </h3>
-              <p className="text-gray-600 mb-6">
-                Hemos recibido tu solicitud. Un representante de TCP se comunicará contigo 
-                en las próximas 48 horas para completar tu afiliación.
+          {/* Formulario de pre-registro */}
+          <div className="lg:col-span-2">
+            <div className="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">
+                Formulario de Pre-Registro
+              </h2>
+              <p className="text-gray-600 mb-8">
+                Completa este formulario para iniciar tu proceso de afiliación en línea.
               </p>
-              <Link
-                href="/"
-                className="inline-flex items-center gap-2 text-red-600 font-medium hover:text-red-700"
-              >
-                Volver al inicio
-                <ArrowRight className="h-4 w-4" />
-              </Link>
-            </div>
-          ) : (
-            <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-lg p-6 md:p-8">
-              <div className="grid md:grid-cols-2 gap-6">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Nombres *
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    value={formData.nombres}
-                    onChange={(e) => setFormData({...formData, nombres: e.target.value})}
-                    className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all"
-                    placeholder="Tus nombres"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Apellidos *
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    value={formData.apellidos}
-                    onChange={(e) => setFormData({...formData, apellidos: e.target.value})}
-                    className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all"
-                    placeholder="Tus apellidos"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    DNI *
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    maxLength={8}
-                    pattern="[0-9]{8}"
-                    value={formData.dni}
-                    onChange={(e) => setFormData({...formData, dni: e.target.value.replace(/\D/g, '')})}
-                    className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all"
-                    placeholder="12345678"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Teléfono *
-                  </label>
-                  <input
-                    type="tel"
-                    required
-                    value={formData.telefono}
-                    onChange={(e) => setFormData({...formData, telefono: e.target.value})}
-                    className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all"
-                    placeholder="+51 999 999 999"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Email *
-                  </label>
-                  <input
-                    type="email"
-                    required
-                    value={formData.email}
-                    onChange={(e) => setFormData({...formData, email: e.target.value})}
-                    className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all"
-                    placeholder="tu@email.com"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Departamento *
-                  </label>
-                  <select
-                    required
-                    value={formData.departamento}
-                    onChange={(e) => setFormData({...formData, departamento: e.target.value})}
-                    className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all"
-                  >
-                    <option value="">Selecciona...</option>
-                    {departamentos.map((dept) => (
-                      <option key={dept} value={dept}>{dept}</option>
-                    ))}
-                  </select>
-                </div>
-              </div>
 
-              <div className="mt-6">
-                <label className="flex items-start gap-3 cursor-pointer">
+              {error && (
+                <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl flex items-center gap-3">
+                  <AlertCircle className="h-5 w-5 text-red-600 flex-shrink-0" />
+                  <p className="text-red-800">{error}</p>
+                </div>
+              )}
+
+              <form onSubmit={handleSubmit} className="space-y-6">
+                {/* Datos personales */}
+                <div>
+                  <h4 className="text-lg font-semibold text-gray-900 mb-4">Datos Personales</h4>
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Nombres *
+                      </label>
+                      <input
+                        type="text"
+                        name="nombres"
+                        value={formData.nombres}
+                        onChange={handleChange}
+                        required
+                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                        placeholder="Ingresa tus nombres"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Apellidos *
+                      </label>
+                      <input
+                        type="text"
+                        name="apellidos"
+                        value={formData.apellidos}
+                        onChange={handleChange}
+                        required
+                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                        placeholder="Ingresa tus apellidos"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        DNI *
+                      </label>
+                      <input
+                        type="text"
+                        name="dni"
+                        value={formData.dni}
+                        onChange={handleChange}
+                        required
+                        maxLength={8}
+                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                        placeholder="12345678"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Fecha de Nacimiento *
+                      </label>
+                      <input
+                        type="date"
+                        name="fechaNacimiento"
+                        value={formData.fechaNacimiento}
+                        onChange={handleChange}
+                        required
+                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Datos de contacto */}
+                <div>
+                  <h4 className="text-lg font-semibold text-gray-900 mb-4">Datos de Contacto</h4>
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Correo Electrónico *
+                      </label>
+                      <input
+                        type="email"
+                        name="email"
+                        value={formData.email}
+                        onChange={handleChange}
+                        required
+                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                        placeholder="tu@email.com"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Teléfono *
+                      </label>
+                      <input
+                        type="tel"
+                        name="telefono"
+                        value={formData.telefono}
+                        onChange={handleChange}
+                        required
+                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                        placeholder="+51 999 999 999"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Ubicación */}
+                <div>
+                  <h4 className="text-lg font-semibold text-gray-900 mb-4">Ubicación</h4>
+                  <div className="grid md:grid-cols-3 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Departamento *
+                      </label>
+                      <select
+                        name="departamento"
+                        value={formData.departamento}
+                        onChange={handleChange}
+                        required
+                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                      >
+                        <option value="">Selecciona</option>
+                        {departamentos.map((dep) => (
+                          <option key={dep} value={dep}>{dep}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Provincia *
+                      </label>
+                      <input
+                        type="text"
+                        name="provincia"
+                        value={formData.provincia}
+                        onChange={handleChange}
+                        required
+                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                        placeholder="Provincia"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Distrito *
+                      </label>
+                      <input
+                        type="text"
+                        name="distrito"
+                        value={formData.distrito}
+                        onChange={handleChange}
+                        required
+                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                        placeholder="Distrito"
+                      />
+                    </div>
+                  </div>
+                  <div className="mt-4">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Dirección
+                    </label>
+                    <input
+                      type="text"
+                      name="direccion"
+                      value={formData.direccion}
+                      onChange={handleChange}
+                      className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                      placeholder="Av. / Jr. / Calle"
+                    />
+                  </div>
+                </div>
+
+                {/* Ocupación */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Ocupación
+                  </label>
+                  <input
+                    type="text"
+                    name="ocupacion"
+                    value={formData.ocupacion}
+                    onChange={handleChange}
+                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                    placeholder="Profesión u ocupación"
+                  />
+                </div>
+
+                {/* Términos */}
+                <div className="flex items-start gap-3">
                   <input
                     type="checkbox"
-                    required
+                    id="aceptaTerminos"
+                    name="aceptaTerminos"
                     checked={formData.aceptaTerminos}
-                    onChange={(e) => setFormData({...formData, aceptaTerminos: e.target.checked})}
-                    className="w-5 h-5 text-red-600 border-gray-300 rounded focus:ring-red-500 mt-0.5"
+                    onChange={handleChange}
+                    className="mt-1 h-5 w-5 text-red-600 border-gray-300 rounded focus:ring-red-500"
                   />
-                  <span className="text-sm text-gray-600">
-                    Acepto el <Link href="/#ideario-politico" className="text-red-600 hover:underline">Ideario Político</Link> y 
-                    el <Link href="/#estatuto" className="text-red-600 hover:underline">Estatuto</Link> del partido, 
-                    y autorizo el tratamiento de mis datos personales según la Ley N° 29733.
-                  </span>
-                </label>
-              </div>
+                  <label htmlFor="aceptaTerminos" className="text-sm text-gray-600">
+                    Declaro que la información proporcionada es veraz y acepto los{" "}
+                    <a href="/pages/todo-con-el-pueblo" className="text-red-600 hover:underline">
+                      estatutos y reglamentos
+                    </a>{" "}
+                    del partido Todo con el Pueblo. *
+                  </label>
+                </div>
 
-              <button
-                type="submit"
-                disabled={isSubmitting}
-                className="w-full mt-8 py-4 bg-red-600 hover:bg-red-700 disabled:bg-red-400 text-white font-semibold rounded-lg transition-all flex items-center justify-center gap-2"
-              >
-                {isSubmitting ? (
-                  <>
-                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-                    Enviando...
-                  </>
-                ) : (
-                  <>
-                    Enviar Pre-registro
-                    <ArrowRight className="h-5 w-5" />
-                  </>
-                )}
-              </button>
-            </form>
-          )}
-        </div>
-      </section>
-
-      {/* Footer Link */}
-      <section className="bg-gray-900 py-8">
-        <div className="max-w-4xl mx-auto px-4 text-center">
-          <p className="text-gray-400 mb-4">
-            ¿Tienes dudas? Visita nuestros comités o contáctanos.
-          </p>
-          <div className="flex flex-wrap justify-center gap-4">
-            <Link
-              href="/comites"
-              className="text-white hover:text-red-400 font-medium transition-colors"
-            >
-              Ver Comités
-            </Link>
-            <span className="text-gray-600">|</span>
-            <Link
-              href="/#contacto"
-              className="text-white hover:text-red-400 font-medium transition-colors"
-            >
-              Contacto
-            </Link>
+                <button
+                  type="submit"
+                  disabled={enviando}
+                  className="w-full py-4 bg-red-600 text-white rounded-xl font-semibold hover:bg-red-700 transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {enviando ? (
+                    <>
+                      <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent" />
+                      Enviando...
+                    </>
+                  ) : (
+                    <>
+                      Enviar Solicitud
+                      <ArrowRight className="h-5 w-5" />
+                    </>
+                  )}
+                </button>
+              </form>
+            </div>
           </div>
         </div>
-      </section>
-    </main>
+      </div>
+    </div>
   );
 }

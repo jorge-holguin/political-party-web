@@ -7,43 +7,43 @@ import { usePathname } from "next/navigation"
 import { Menu, X, ChevronDown } from "lucide-react"
 
 const navItems = [
-  { name: "Inicio", path: "/", anchor: "#inicio" },
-  { name: "Biografía", path: "/", anchor: "#biografia" },
-  { name: "Trayectoria", path: "/", anchor: "#trayectoria" },
-  { name: "Prensa", path: "/", anchor: "#prensa" },
-  { name: "Galería", path: "/", anchor: "#contenido" },
-  { name: "Inscríbete", path: "/", anchor: "#inscribete" },
-  { name: "Contacto", path: "/", anchor: "#contacto" },
+  { name: "Inicio", href: "/inicio" },
+  { name: "Prensa", href: "/prensa" },
+  { name: "Comités", href: "/comites" },
+  { name: "Contacto", href: "/contacto" },
+]
+
+const tcpItems = [
+  { name: "Estatuto", href: "/todo-con-el-pueblo" },
+  { name: "Reglamento", href: "/todo-con-el-pueblo" },
+  { name: "Síntesis", href: "/todo-con-el-pueblo" },
+]
+
+const uneteItems = [
+  { name: "Afiliados", href: "/afiliados" },
+  { name: "Representantes", href: "/representantes" },
 ]
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
-  const [activeSection, setActiveSection] = useState("inicio")
+  const [tcpOpen, setTcpOpen] = useState(false)
   const [uneteOpen, setUneteOpen] = useState(false)
   const pathname = usePathname()
+  const tcpRef = useRef<HTMLDivElement>(null)
   const uneteRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 50)
-
-      const sections = ["inicio", "biografia", "trayectoria", "prensa", "contenido", "inscribete", "contacto"]
-      for (const section of sections) {
-        const element = document.getElementById(section)
-        if (element) {
-          const rect = element.getBoundingClientRect()
-          if (rect.top <= 100 && rect.bottom >= 100) {
-            setActiveSection(section)
-            break
-          }
-        }
-      }
     }
 
     const handleClickOutside = (event: MouseEvent) => {
       if (uneteRef.current && !uneteRef.current.contains(event.target as Node)) {
         setUneteOpen(false)
+      }
+      if (tcpRef.current && !tcpRef.current.contains(event.target as Node)) {
+        setTcpOpen(false)
       }
     }
 
@@ -55,17 +55,6 @@ export default function Navbar() {
     }
   }, [])
 
-  const scrollToSection = (anchor: string) => {
-    const id = anchor.replace("#", "")
-    const element = document.getElementById(id)
-    if (element) {
-      element.scrollIntoView({ behavior: "smooth" })
-    }
-    setIsOpen(false)
-  }
-
-  const isHomePage = pathname === "/"
-
   return (
     <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
       scrolled 
@@ -75,7 +64,7 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center">
-            <Link href="/" className="flex-shrink-0 flex items-center gap-2">
+            <Link href="/inicio" className="flex-shrink-0 flex items-center gap-2">
               <Image 
                 src="/images/logos/logo.png" 
                 alt="Todo con el Pueblo" 
@@ -91,36 +80,11 @@ export default function Navbar() {
           <div className="hidden md:block">
             <div className="ml-10 flex items-baseline space-x-1">
               {navItems.map((item) => {
-                if (item.href) {
-                  const isActive = pathname === item.href
-                  return (
-                    <Link
-                      key={item.name}
-                      href={item.href}
-                      className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ${
-                        isActive
-                          ? "bg-red-600 text-white shadow-md"
-                          : "text-gray-700 hover:bg-red-600 hover:text-white"
-                      }`}
-                    >
-                      {item.name}
-                    </Link>
-                  )
-                }
-                
-                const sectionId = item.anchor?.replace("#", "") || ""
-                const isActive = isHomePage && activeSection === sectionId
-                
+                const isActive = pathname === item.href || pathname.startsWith(item.href)
                 return (
-                  <button
+                  <Link
                     key={item.name}
-                    onClick={() => {
-                      if (isHomePage && item.anchor) {
-                        scrollToSection(item.anchor)
-                      } else if (item.anchor) {
-                        window.location.href = "/" + item.anchor
-                      }
-                    }}
+                    href={item.href}
                     className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ${
                       isActive
                         ? "bg-red-600 text-white shadow-md"
@@ -128,16 +92,46 @@ export default function Navbar() {
                     }`}
                   >
                     {item.name}
-                  </button>
+                  </Link>
                 )
               })}
               
+              {/* Dropdown TCP */}
+              <div ref={tcpRef} className="relative">
+                <button
+                  onClick={() => setTcpOpen(!tcpOpen)}
+                  className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 flex items-center gap-1 ${
+                    tcpOpen || pathname.includes("todo-con-el-pueblo")
+                      ? "bg-red-600 text-white shadow-md"
+                      : "text-gray-700 hover:bg-red-600 hover:text-white"
+                  }`}
+                >
+                  TCP
+                  <ChevronDown className={`h-4 w-4 transition-transform ${tcpOpen ? "rotate-180" : ""}`} />
+                </button>
+                
+                {tcpOpen && (
+                  <div className="absolute top-full left-0 mt-2 w-44 bg-white rounded-lg shadow-xl border border-gray-100 overflow-hidden z-50">
+                    {tcpItems.map((subItem) => (
+                      <Link
+                        key={subItem.name}
+                        href={subItem.href}
+                        className="block px-4 py-3 text-sm text-gray-700 hover:bg-red-50 hover:text-red-600 transition-colors"
+                        onClick={() => setTcpOpen(false)}
+                      >
+                        {subItem.name}
+                      </Link>
+                    ))}
+                  </div>
+                )}
+              </div>
+
               {/* Dropdown Únete */}
               <div ref={uneteRef} className="relative">
                 <button
                   onClick={() => setUneteOpen(!uneteOpen)}
                   className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 flex items-center gap-1 ${
-                    uneteOpen || activeSection === "inscribete"
+                    uneteOpen || pathname.includes("afiliados") || pathname.includes("representantes")
                       ? "bg-red-600 text-white shadow-md"
                       : "text-gray-700 hover:bg-red-600 hover:text-white"
                   }`}
@@ -147,33 +141,16 @@ export default function Navbar() {
                 </button>
                 
                 {uneteOpen && (
-                  <div className="absolute top-full left-0 mt-2 w-40 bg-white rounded-lg shadow-xl border border-gray-100 overflow-hidden z-50">
+                  <div className="absolute top-full left-0 mt-2 w-44 bg-white rounded-lg shadow-xl border border-gray-100 overflow-hidden z-50">
                     {uneteItems.map((subItem) => (
-                      subItem.href ? (
-                        <Link
-                          key={subItem.name}
-                          href={subItem.href}
-                          className="block px-4 py-3 text-sm text-gray-700 hover:bg-red-50 hover:text-red-600 transition-colors"
-                          onClick={() => setUneteOpen(false)}
-                        >
-                          {subItem.name}
-                        </Link>
-                      ) : (
-                        <button
-                          key={subItem.name}
-                          onClick={() => {
-                            if (isHomePage && subItem.anchor) {
-                              scrollToSection(subItem.anchor)
-                            } else if (subItem.anchor) {
-                              window.location.href = "/" + subItem.anchor
-                            }
-                            setUneteOpen(false)
-                          }}
-                          className="block w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-red-50 hover:text-red-600 transition-colors"
-                        >
-                          {subItem.name}
-                        </button>
-                      )
+                      <Link
+                        key={subItem.name}
+                        href={subItem.href}
+                        className="block px-4 py-3 text-sm text-gray-700 hover:bg-red-50 hover:text-red-600 transition-colors"
+                        onClick={() => setUneteOpen(false)}
+                      >
+                        {subItem.name}
+                      </Link>
                     ))}
                   </div>
                 )}
@@ -197,41 +174,16 @@ export default function Navbar() {
       
       {/* Mobile menu */}
       <div className={`md:hidden transition-all duration-300 overflow-hidden ${
-        isOpen ? "max-h-[500px] opacity-100" : "max-h-0 opacity-0"
+        isOpen ? "max-h-[600px] opacity-100" : "max-h-0 opacity-0"
       }`}>
         <div className="px-4 py-3 space-y-2 bg-white backdrop-blur-md border-t border-gray-200">
           {navItems.map((item) => {
-            if (item.href) {
-              const isActive = pathname === item.href
-              return (
-                <Link
-                  key={item.name}
-                  href={item.href}
-                  onClick={() => setIsOpen(false)}
-                  className={`block w-full text-left px-4 py-3 rounded-lg text-base font-medium transition-all duration-300 ${
-                    isActive
-                      ? "bg-red-600 text-white"
-                      : "text-gray-700 hover:bg-red-600 hover:text-white"
-                  }`}
-                >
-                  {item.name}
-                </Link>
-              )
-            }
-            
-            const sectionId = item.anchor?.replace("#", "") || ""
-            const isActive = isHomePage && activeSection === sectionId
-            
+            const isActive = pathname === item.href || pathname.startsWith(item.href)
             return (
-              <button
+              <Link
                 key={item.name}
-                onClick={() => {
-                  if (isHomePage && item.anchor) {
-                    scrollToSection(item.anchor)
-                  } else if (item.anchor) {
-                    window.location.href = "/" + item.anchor
-                  }
-                }}
+                href={item.href}
+                onClick={() => setIsOpen(false)}
                 className={`block w-full text-left px-4 py-3 rounded-lg text-base font-medium transition-all duration-300 ${
                   isActive
                     ? "bg-red-600 text-white"
@@ -239,38 +191,37 @@ export default function Navbar() {
                 }`}
               >
                 {item.name}
-              </button>
+              </Link>
             )
           })}
           
+          {/* TCP section mobile */}
+          <div className="border-t border-gray-200 pt-2 mt-2">
+            <p className="px-4 py-2 text-sm font-semibold text-gray-500">Todo con el Pueblo</p>
+            {tcpItems.map((subItem) => (
+              <Link
+                key={subItem.name}
+                href={subItem.href}
+                onClick={() => setIsOpen(false)}
+                className="block w-full text-left px-4 py-3 rounded-lg text-base font-medium text-gray-700 hover:bg-red-600 hover:text-white transition-all duration-300"
+              >
+                {subItem.name}
+              </Link>
+            ))}
+          </div>
+
           {/* Únete section mobile */}
           <div className="border-t border-gray-200 pt-2 mt-2">
             <p className="px-4 py-2 text-sm font-semibold text-gray-500">Únete</p>
             {uneteItems.map((subItem) => (
-              subItem.href ? (
-                <Link
-                  key={subItem.name}
-                  href={subItem.href}
-                  onClick={() => setIsOpen(false)}
-                  className="block w-full text-left px-4 py-3 rounded-lg text-base font-medium text-gray-700 hover:bg-red-600 hover:text-white transition-all duration-300"
-                >
-                  {subItem.name}
-                </Link>
-              ) : (
-                <button
-                  key={subItem.name}
-                  onClick={() => {
-                    if (isHomePage && subItem.anchor) {
-                      scrollToSection(subItem.anchor)
-                    } else if (subItem.anchor) {
-                      window.location.href = "/" + subItem.anchor
-                    }
-                  }}
-                  className="block w-full text-left px-4 py-3 rounded-lg text-base font-medium text-gray-700 hover:bg-red-600 hover:text-white transition-all duration-300"
-                >
-                  {subItem.name}
-                </button>
-              )
+              <Link
+                key={subItem.name}
+                href={subItem.href}
+                onClick={() => setIsOpen(false)}
+                className="block w-full text-left px-4 py-3 rounded-lg text-base font-medium text-gray-700 hover:bg-red-600 hover:text-white transition-all duration-300"
+              >
+                {subItem.name}
+              </Link>
             ))}
           </div>
         </div>
