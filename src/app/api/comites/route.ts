@@ -24,6 +24,7 @@ export async function GET(request: NextRequest) {
     const regionFilter = searchParams.get("region");
 
     const queryBody: any = {
+      page_size: 100,
       sorts: [
         { property: "Región", direction: "ascending" },
         { property: "Provincia", direction: "ascending" },
@@ -37,25 +38,38 @@ export async function GET(request: NextRequest) {
       };
     }
 
-    const response = await fetch(`https://api.notion.com/v1/databases/${DATABASE_ID}/query`, {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${NOTION_TOKEN}`,
-        "Notion-Version": "2022-06-28",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(queryBody),
-      next: { revalidate: 300 }
-    });
+    let allResults: any[] = [];
+    let cursor: string | null = null;
 
-    const data = await response.json();
+    do {
+      if (cursor) {
+        queryBody.start_cursor = cursor;
+      }
 
-    if (!response.ok) {
-      console.error("❌ Error de Notion:", data);
-      return NextResponse.json({ error: data.message }, { status: response.status });
-    }
+      const response = await fetch(`https://api.notion.com/v1/databases/${DATABASE_ID}/query`, {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${NOTION_TOKEN}`,
+          "Notion-Version": "2022-06-28",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(queryBody),
+        next: { revalidate: 300 }
+      });
 
-    const comites: Comite[] = data.results.map((page: any) => {
+      const data = await response.json();
+
+      if (!response.ok) {
+        console.error("❌ Error de Notion:", data);
+        return NextResponse.json({ error: data.message }, { status: response.status });
+      }
+
+      allResults = allResults.concat(data.results);
+      cursor = data.has_more ? data.next_cursor : null;
+
+    } while (cursor);
+
+    const comites: Comite[] = allResults.map((page: any) => {
       const props = page.properties;
 
       const provincia = props["Provincia"]?.title?.[0]?.plain_text || "";

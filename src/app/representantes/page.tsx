@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Users, Award, Calendar, CheckCircle } from "lucide-react";
+import { RepresentantesSkeleton } from "@/components/SkeletonLoader";
 
 interface Directivo {
   id: string;
@@ -10,6 +11,7 @@ interface Directivo {
   afiliado: boolean;
   inicioCargo: string | null;
   numeroRegistro: number | null;
+  foto: string | null;
 }
 
 export default function RepresentantesPage() {
@@ -52,14 +54,7 @@ export default function RepresentantesPage() {
   );
 
   if (cargando) {
-    return (
-      <div className="pt-20 min-h-screen bg-gradient-to-b from-gray-50 to-white flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-red-600 mx-auto mb-4"></div>
-          <p className="text-gray-500">Cargando directivos...</p>
-        </div>
-      </div>
-    );
+    return <RepresentantesSkeleton />;
   }
 
   return (
@@ -83,8 +78,16 @@ export default function RepresentantesPage() {
           <div className="bg-white rounded-2xl shadow-xl overflow-hidden mb-12 border border-gray-100">
             <div className="bg-gradient-to-br from-red-600 to-red-800 p-8 text-white">
               <div className="flex flex-col md:flex-row items-center gap-8">
-                <div className="w-32 h-32 bg-white/20 rounded-full flex items-center justify-center flex-shrink-0">
-                  <Users className="h-16 w-16 text-white" />
+                <div className="w-32 h-32 bg-white/20 rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden">
+                  {secretarioGeneral.foto ? (
+                    <img 
+                      src={secretarioGeneral.foto} 
+                      alt={secretarioGeneral.nombreCompleto}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <Users className="h-16 w-16 text-white" />
+                  )}
                 </div>
                 <div className="text-center md:text-left flex-1">
                   <span className="inline-block px-4 py-1 bg-white/20 rounded-full text-sm font-medium mb-3">
@@ -131,8 +134,16 @@ export default function RepresentantesPage() {
                 >
                   <div className="p-6">
                     <div className="flex items-start gap-4">
-                      <div className="w-14 h-14 bg-red-100 rounded-full flex items-center justify-center flex-shrink-0">
-                        <Users className="h-7 w-7 text-red-600" />
+                      <div className="w-14 h-14 bg-red-100 rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden">
+                        {directivo.foto ? (
+                          <img 
+                            src={directivo.foto} 
+                            alt={directivo.nombreCompleto}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <Users className="h-7 w-7 text-red-600" />
+                        )}
                       </div>
                       <div className="flex-1 min-w-0">
                         <span className="inline-block text-xs font-medium text-red-600 bg-red-50 px-3 py-1 rounded-full mb-2">

@@ -10,6 +10,7 @@ export interface Directivo {
   afiliado: boolean;
   inicioCargo: string | null;
   numeroRegistro: number | null;
+  foto: string | null;
 }
 
 export async function GET() {
@@ -21,29 +22,45 @@ export async function GET() {
   }
 
   try {
-    const response = await fetch(`https://api.notion.com/v1/databases/${DATABASE_ID}/query`, {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${NOTION_TOKEN}`,
-        "Notion-Version": "2022-06-28",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        sorts: [
-          { property: "N° Registro", direction: "ascending" },
-        ],
-      }),
-      next: { revalidate: 300 }
-    });
+    const queryBody: any = {
+      page_size: 100,
+      sorts: [
+        { property: "N° Registro", direction: "ascending" },
+      ],
+    };
 
-    const data = await response.json();
+    let allResults: any[] = [];
+    let cursor: string | null = null;
 
-    if (!response.ok) {
-      console.error("❌ Error de Notion:", data);
-      return NextResponse.json({ error: data.message }, { status: response.status });
-    }
+    do {
+      if (cursor) {
+        queryBody.start_cursor = cursor;
+      }
 
-    const directivos: Directivo[] = data.results.map((page: any) => {
+      const response = await fetch(`https://api.notion.com/v1/databases/${DATABASE_ID}/query`, {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${NOTION_TOKEN}`,
+          "Notion-Version": "2022-06-28",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(queryBody),
+        next: { revalidate: 300 }
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        console.error("❌ Error de Notion:", data);
+        return NextResponse.json({ error: data.message }, { status: response.status });
+      }
+
+      allResults = allResults.concat(data.results);
+      cursor = data.has_more ? data.next_cursor : null;
+
+    } while (cursor);
+
+    const directivos: Directivo[] = allResults.map((page: any) => {
       const props = page.properties;
 
       const nombreCompleto =
@@ -55,6 +72,9 @@ export async function GET() {
       const afiliado = props["Afiliado"]?.checkbox || false;
       const inicioCargo = props["Inicio de Cargo"]?.date?.start || null;
       const numeroRegistro = props["N° Registro"]?.number || null;
+      const foto = props["Foto"]?.files?.[0]?.file?.url || 
+                   props["Foto"]?.files?.[0]?.external?.url || 
+                   null;
 
       return {
         id: page.id,
@@ -63,6 +83,7 @@ export async function GET() {
         afiliado,
         inicioCargo,
         numeroRegistro,
+        foto,
       };
     });
 

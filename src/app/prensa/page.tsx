@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import { Calendar, ExternalLink, Play, Search, Filter, ChevronDown } from "lucide-react";
+import { PrensaSkeleton } from "@/components/SkeletonLoader";
 
 interface Categoria {
   id: string;
@@ -85,14 +86,7 @@ export default function PrensaPage() {
   };
 
   if (cargando) {
-    return (
-      <div className="pt-20 min-h-screen bg-gradient-to-b from-gray-50 to-white flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-red-600 mx-auto mb-4"></div>
-          <p className="text-gray-500">Cargando noticias...</p>
-        </div>
-      </div>
-    );
+    return <PrensaSkeleton />;
   }
 
   return (

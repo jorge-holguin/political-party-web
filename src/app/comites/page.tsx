@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { MapPin, Building2, ChevronRight, ChevronDown } from "lucide-react";
+import { ComitesSkeleton } from "@/components/SkeletonLoader";
 
 interface Comite {
   id: string;
@@ -117,14 +118,7 @@ export default function ComitesPage() {
   const comiteSeleccionado = selectedProvincia ? comitesPorProvincia[selectedProvincia] : null;
 
   if (cargando) {
-    return (
-      <div className="pt-20 min-h-screen bg-gradient-to-b from-gray-50 to-white flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-red-600 mx-auto mb-4"></div>
-          <p className="text-gray-500">Cargando mapa y comités...</p>
-        </div>
-      </div>
-    );
+    return <ComitesSkeleton />;
   }
 
   return (
