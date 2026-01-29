@@ -1,91 +1,17 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { MapPin, Users, Phone, Mail, ChevronRight } from "lucide-react";
-
-interface Provincia {
-  nombre: string;
-  departamento: string;
-}
+import { MapPin, Building2, ChevronRight, ChevronDown } from "lucide-react";
 
 interface Comite {
+  id: string;
   provincia: string;
-  presidente: string;
-  telefono: string;
-  email: string;
-  direccion: string;
-  afiliados: number;
+  region: string;
+  capital: string;
+  direccion: string | null;
 }
 
-// Datos de ejemplo de comités por provincia
-const comitesPorProvincia: Record<string, Comite> = {
-  "LIMA": {
-    provincia: "Lima",
-    presidente: "Dr. Juan Carlos Pérez",
-    telefono: "+51 999 888 777",
-    email: "lima@todoconelpueblo.pe",
-    direccion: "Av. Arequipa 1234, Lima",
-    afiliados: 5420
-  },
-  "AREQUIPA": {
-    provincia: "Arequipa",
-    presidente: "Ing. María Rodríguez",
-    telefono: "+51 999 777 666",
-    email: "arequipa@todoconelpueblo.pe",
-    direccion: "Calle Mercaderes 456, Arequipa",
-    afiliados: 3200
-  },
-  "CUSCO": {
-    provincia: "Cusco",
-    presidente: "Lic. Pedro Quispe",
-    telefono: "+51 999 666 555",
-    email: "cusco@todoconelpueblo.pe",
-    direccion: "Plaza de Armas 123, Cusco",
-    afiliados: 2800
-  },
-  "TRUJILLO": {
-    provincia: "Trujillo",
-    presidente: "Dra. Ana López",
-    telefono: "+51 999 555 444",
-    email: "trujillo@todoconelpueblo.pe",
-    direccion: "Jr. Pizarro 789, Trujillo",
-    afiliados: 2500
-  },
-  "CHICLAYO": {
-    provincia: "Chiclayo",
-    presidente: "Dr. Carlos Mendoza",
-    telefono: "+51 999 444 333",
-    email: "chiclayo@todoconelpueblo.pe",
-    direccion: "Av. Balta 321, Chiclayo",
-    afiliados: 2100
-  },
-  "PIURA": {
-    provincia: "Piura",
-    presidente: "Ing. Rosa Fernández",
-    telefono: "+51 999 333 222",
-    email: "piura@todoconelpueblo.pe",
-    direccion: "Calle Lima 654, Piura",
-    afiliados: 1900
-  },
-  "HUANCAYO": {
-    provincia: "Huancayo",
-    presidente: "Lic. Miguel Torres",
-    telefono: "+51 999 222 111",
-    email: "huancayo@todoconelpueblo.pe",
-    direccion: "Jr. Real 987, Huancayo",
-    afiliados: 1700
-  },
-  "IQUITOS": {
-    provincia: "Maynas",
-    presidente: "Dr. Jorge Vásquez",
-    telefono: "+51 999 111 000",
-    email: "iquitos@todoconelpueblo.pe",
-    direccion: "Malecón Tarapacá 159, Iquitos",
-    afiliados: 1500
-  },
-};
-
-// Colores por departamento
+// Colores por departamento para el mapa
 const departamentoColores: Record<string, string> = {
   "AMAZONAS": "#ef4444",
   "ANCASH": "#f97316",
@@ -116,21 +42,51 @@ const departamentoColores: Record<string, string> = {
 
 export default function ComitesPage() {
   const [geoData, setGeoData] = useState<any>(null);
+  const [comites, setComites] = useState<Comite[]>([]);
   const [selectedProvincia, setSelectedProvincia] = useState<string | null>(null);
   const [hoveredProvincia, setHoveredProvincia] = useState<string | null>(null);
+  const [regionExpandida, setRegionExpandida] = useState<string | null>(null);
+  const [cargando, setCargando] = useState(true);
   const svgRef = useRef<SVGSVGElement>(null);
 
   useEffect(() => {
-    fetch("/peru_provincial_simple.geojson")
-      .then((res) => res.json())
-      .then((data) => setGeoData(data))
-      .catch((err) => console.error("Error loading GeoJSON:", err));
+    // Cargar GeoJSON y comités de Notion
+    Promise.all([
+      fetch("/peru_provincial_simple.geojson").then((res) => res.json()),
+      fetch("/api/comites").then((res) => res.json())
+    ])
+      .then(([geoJson, comitesData]) => {
+        setGeoData(geoJson);
+        if (Array.isArray(comitesData)) {
+          setComites(comitesData);
+        }
+      })
+      .catch((err) => console.error("Error loading data:", err))
+      .finally(() => setCargando(false));
   }, []);
+
+  // Crear mapa de comités por provincia (normalizado a mayúsculas)
+  const comitesPorProvincia: Record<string, Comite> = {};
+  comites.forEach((c) => {
+    if (c.provincia) {
+      comitesPorProvincia[c.provincia.toUpperCase()] = c;
+    }
+  });
+
+  // Agrupar comités por región
+  const comitesPorRegion: Record<string, Comite[]> = {};
+  comites.forEach((c) => {
+    if (c.region) {
+      if (!comitesPorRegion[c.region]) {
+        comitesPorRegion[c.region] = [];
+      }
+      comitesPorRegion[c.region].push(c);
+    }
+  });
 
   // Función para convertir coordenadas geográficas a coordenadas SVG
   const projectCoordinates = (coords: number[]): [number, number] => {
     const [lon, lat] = coords;
-    // Bounds aproximados de Perú
     const minLon = -81.5;
     const maxLon = -68.5;
     const minLat = -18.5;
@@ -158,7 +114,18 @@ export default function ComitesPage() {
       .join(" ");
   };
 
-  const comiteActual = selectedProvincia ? comitesPorProvincia[selectedProvincia] : null;
+  const comiteSeleccionado = selectedProvincia ? comitesPorProvincia[selectedProvincia] : null;
+
+  if (cargando) {
+    return (
+      <div className="pt-20 min-h-screen bg-gradient-to-b from-gray-50 to-white flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-red-600 mx-auto mb-4"></div>
+          <p className="text-gray-500">Cargando mapa y comités...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="pt-20 min-h-screen bg-gradient-to-b from-gray-50 to-white">
@@ -192,6 +159,7 @@ export default function ComitesPage() {
                   className="w-full h-auto"
                   style={{ maxHeight: "600px" }}
                 >
+                  {/* Renderizar provincias */}
                   {geoData.features.map((feature: any, index: number) => {
                     const nombreProv = feature.properties.NOMBPROV;
                     const departamento = feature.properties.FIRST_NOMB;
@@ -215,8 +183,8 @@ export default function ComitesPage() {
                         key={index}
                         d={pathD}
                         fill={isSelected ? "#dc2626" : isHovered ? "#fecaca" : hasComite ? baseColor : "#e2e8f0"}
-                        stroke={isSelected || isHovered ? "#991b1b" : "#ffffff"}
-                        strokeWidth={isSelected || isHovered ? 2 : 0.5}
+                        stroke={isSelected || isHovered ? "#991b1b" : "#374151"}
+                        strokeWidth={isSelected || isHovered ? 2 : 0.8}
                         className="cursor-pointer transition-all duration-200"
                         onMouseEnter={() => setHoveredProvincia(nombreProv)}
                         onMouseLeave={() => setHoveredProvincia(null)}
@@ -242,7 +210,7 @@ export default function ComitesPage() {
                 <p className="text-sm text-red-800 font-medium">
                   {hoveredProvincia}
                   {comitesPorProvincia[hoveredProvincia] && (
-                    <span className="ml-2 text-red-600">• Comité activo</span>
+                    <span className="ml-2 text-red-600">• Comité registrado</span>
                   )}
                 </p>
               </div>
@@ -260,22 +228,22 @@ export default function ComitesPage() {
                   </div>
                   <div>
                     <p className="text-2xl font-bold text-gray-900">
-                      {Object.keys(comitesPorProvincia).length}
+                      {comites.length}
                     </p>
-                    <p className="text-sm text-gray-500">Comités Activos</p>
+                    <p className="text-sm text-gray-500">Comités Registrados</p>
                   </div>
                 </div>
               </div>
               <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-100">
                 <div className="flex items-center gap-3">
                   <div className="p-3 bg-red-100 rounded-lg">
-                    <Users className="h-6 w-6 text-red-600" />
+                    <Building2 className="h-6 w-6 text-red-600" />
                   </div>
                   <div>
                     <p className="text-2xl font-bold text-gray-900">
-                      {Object.values(comitesPorProvincia).reduce((acc, c) => acc + c.afiliados, 0).toLocaleString()}
+                      {Object.keys(comitesPorRegion).length}
                     </p>
-                    <p className="text-sm text-gray-500">Afiliados Total</p>
+                    <p className="text-sm text-gray-500">Regiones</p>
                   </div>
                 </div>
               </div>
@@ -284,47 +252,43 @@ export default function ComitesPage() {
             {/* Detalle del comité seleccionado */}
             <div className="bg-white rounded-2xl shadow-xl p-6 border border-gray-100">
               <h3 className="text-xl font-bold text-gray-900 mb-4">
-                {comiteActual ? `Comité ${comiteActual.provincia}` : "Selecciona una provincia"}
+                {comiteSeleccionado ? `Comité ${comiteSeleccionado.provincia}` : "Selecciona una provincia"}
               </h3>
               
-              {comiteActual ? (
+              {comiteSeleccionado ? (
                 <div className="space-y-4">
-                  <div className="flex items-start gap-3">
-                    <Users className="h-5 w-5 text-red-600 mt-0.5" />
-                    <div>
-                      <p className="text-sm text-gray-500">Presidente</p>
-                      <p className="font-medium text-gray-900">{comiteActual.presidente}</p>
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <Phone className="h-5 w-5 text-red-600 mt-0.5" />
-                    <div>
-                      <p className="text-sm text-gray-500">Teléfono</p>
-                      <p className="font-medium text-gray-900">{comiteActual.telefono}</p>
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <Mail className="h-5 w-5 text-red-600 mt-0.5" />
-                    <div>
-                      <p className="text-sm text-gray-500">Email</p>
-                      <p className="font-medium text-gray-900">{comiteActual.email}</p>
-                    </div>
-                  </div>
                   <div className="flex items-start gap-3">
                     <MapPin className="h-5 w-5 text-red-600 mt-0.5" />
                     <div>
-                      <p className="text-sm text-gray-500">Dirección</p>
-                      <p className="font-medium text-gray-900">{comiteActual.direccion}</p>
+                      <p className="text-sm text-gray-500">Provincia</p>
+                      <p className="font-medium text-gray-900">{comiteSeleccionado.provincia}</p>
                     </div>
                   </div>
-                  <div className="pt-4 border-t border-gray-100">
-                    <div className="flex items-center justify-between">
-                      <span className="text-gray-500">Afiliados registrados</span>
-                      <span className="text-2xl font-bold text-red-600">
-                        {comiteActual.afiliados.toLocaleString()}
-                      </span>
+                  <div className="flex items-start gap-3">
+                    <Building2 className="h-5 w-5 text-red-600 mt-0.5" />
+                    <div>
+                      <p className="text-sm text-gray-500">Región</p>
+                      <p className="font-medium text-gray-900">{comiteSeleccionado.region}</p>
                     </div>
                   </div>
+                  {comiteSeleccionado.capital && (
+                    <div className="flex items-start gap-3">
+                      <MapPin className="h-5 w-5 text-red-600 mt-0.5" />
+                      <div>
+                        <p className="text-sm text-gray-500">Capital</p>
+                        <p className="font-medium text-gray-900">{comiteSeleccionado.capital}</p>
+                      </div>
+                    </div>
+                  )}
+                  {comiteSeleccionado.direccion && (
+                    <div className="flex items-start gap-3 pt-4 border-t border-gray-100">
+                      <MapPin className="h-5 w-5 text-red-600 mt-0.5" />
+                      <div>
+                        <p className="text-sm text-gray-500">Dirección del Local</p>
+                        <p className="font-medium text-gray-900">{comiteSeleccionado.direccion}</p>
+                      </div>
+                    </div>
+                  )}
                 </div>
               ) : (
                 <div className="text-center py-8">
@@ -336,32 +300,63 @@ export default function ComitesPage() {
               )}
             </div>
 
-            {/* Lista de comités */}
+            {/* Lista de comités por región */}
             <div className="bg-white rounded-2xl shadow-xl p-6 border border-gray-100">
               <h3 className="text-xl font-bold text-gray-900 mb-4">
-                Todos los Comités
+                Comités por Región
               </h3>
-              <div className="space-y-2 max-h-64 overflow-y-auto">
-                {Object.entries(comitesPorProvincia).map(([key, comite]) => (
-                  <button
-                    key={key}
-                    onClick={() => setSelectedProvincia(key)}
-                    className={`w-full flex items-center justify-between p-3 rounded-lg transition-all ${
-                      selectedProvincia === key
-                        ? "bg-red-50 border-red-200 border"
-                        : "hover:bg-gray-50 border border-transparent"
-                    }`}
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className={`w-2 h-2 rounded-full ${
-                        selectedProvincia === key ? "bg-red-600" : "bg-gray-400"
-                      }`}></div>
-                      <span className="font-medium text-gray-900">{comite.provincia}</span>
-                    </div>
-                    <ChevronRight className="h-4 w-4 text-gray-400" />
-                  </button>
+              <div className="space-y-2 max-h-80 overflow-y-auto">
+                {Object.entries(comitesPorRegion)
+                  .sort(([a], [b]) => a.localeCompare(b))
+                  .map(([region, comitesRegion]) => (
+                  <div key={region} className="border border-gray-100 rounded-lg overflow-hidden">
+                    <button
+                      onClick={() => setRegionExpandida(regionExpandida === region ? null : region)}
+                      className="w-full flex items-center justify-between p-3 hover:bg-gray-50 transition-colors"
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="w-3 h-3 rounded-full bg-red-600"></div>
+                        <span className="font-medium text-gray-900">{region}</span>
+                        <span className="text-sm text-gray-500">({comitesRegion.length})</span>
+                      </div>
+                      <ChevronDown className={`h-4 w-4 text-gray-400 transition-transform ${
+                        regionExpandida === region ? "rotate-180" : ""
+                      }`} />
+                    </button>
+                    
+                    {regionExpandida === region && (
+                      <div className="border-t border-gray-100 bg-gray-50">
+                        {comitesRegion.map((comite) => (
+                          <button
+                            key={comite.id}
+                            onClick={() => setSelectedProvincia(comite.provincia.toUpperCase())}
+                            className={`w-full flex items-center justify-between p-3 text-left hover:bg-gray-100 transition-colors ${
+                              selectedProvincia === comite.provincia.toUpperCase() ? "bg-red-50" : ""
+                            }`}
+                          >
+                            <div className="flex items-center gap-2">
+                              <div className={`w-2 h-2 rounded-full ${
+                                selectedProvincia === comite.provincia.toUpperCase() ? "bg-red-600" : "bg-gray-400"
+                              }`}></div>
+                              <span className="text-sm text-gray-700">{comite.provincia}</span>
+                            </div>
+                            <ChevronRight className="h-4 w-4 text-gray-400" />
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                 ))}
               </div>
+
+              {comites.length === 0 && (
+                <div className="text-center py-8">
+                  <Building2 className="h-12 w-12 text-gray-300 mx-auto mb-3" />
+                  <p className="text-gray-500">
+                    La información de los comités se actualizará próximamente.
+                  </p>
+                </div>
+              )}
             </div>
           </div>
         </div>

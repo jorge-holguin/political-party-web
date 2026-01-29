@@ -14,9 +14,9 @@ const navItems = [
 ]
 
 const tcpItems = [
-  { name: "Estatuto", href: "/todo-con-el-pueblo" },
-  { name: "Reglamento", href: "/todo-con-el-pueblo" },
-  { name: "Síntesis", href: "/todo-con-el-pueblo" },
+  { name: "Acta de Fundación", href: "/documents/ActaFundacionTCP.pdf", external: true },
+  { name: "Estatuto", href: "/documents/EstatutoTCP.pdf", external: true },
+  { name: "Reglamento", href: "/documents/ReglamentoTCP.pdf", external: true },
 ]
 
 const uneteItems = [
@@ -111,16 +111,18 @@ export default function Navbar() {
                 </button>
                 
                 {tcpOpen && (
-                  <div className="absolute top-full left-0 mt-2 w-44 bg-white rounded-lg shadow-xl border border-gray-100 overflow-hidden z-50">
+                  <div className="absolute top-full left-0 mt-2 w-48 bg-white rounded-lg shadow-xl border border-gray-100 overflow-hidden z-50">
                     {tcpItems.map((subItem) => (
-                      <Link
+                      <a
                         key={subItem.name}
                         href={subItem.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
                         className="block px-4 py-3 text-sm text-gray-700 hover:bg-red-50 hover:text-red-600 transition-colors"
                         onClick={() => setTcpOpen(false)}
                       >
                         {subItem.name}
-                      </Link>
+                      </a>
                     ))}
                   </div>
                 )}
@@ -197,16 +199,18 @@ export default function Navbar() {
           
           {/* TCP section mobile */}
           <div className="border-t border-gray-200 pt-2 mt-2">
-            <p className="px-4 py-2 text-sm font-semibold text-gray-500">Todo con el Pueblo</p>
+            <p className="px-4 py-2 text-sm font-semibold text-gray-500">Documentos Institucionales</p>
             {tcpItems.map((subItem) => (
-              <Link
+              <a
                 key={subItem.name}
                 href={subItem.href}
+                target="_blank"
+                rel="noopener noreferrer"
                 onClick={() => setIsOpen(false)}
                 className="block w-full text-left px-4 py-3 rounded-lg text-base font-medium text-gray-700 hover:bg-red-600 hover:text-white transition-all duration-300"
               >
                 {subItem.name}
-              </Link>
+              </a>
             ))}
           </div>
 
