@@ -20,7 +20,7 @@ export default function BiografiaSection() {
         <div className="bg-gradient-to-br from-red-50 to-gray-50 rounded-2xl p-8 mb-12 shadow-lg border border-red-100">
           <div className="prose prose-lg max-w-none">
             <p className="text-lg text-gray-700 leading-relaxed">
-              <strong className="text-red-600">Dr. Nicolás Bustamante Coronado</strong> nació el 10 de septiembre de 1965 en Lajas, provincia de Chota, Cajamarca. Es abogado de profesión, graduado de la Universidad Católica Los Ángeles de Chimbote, con una Maestría en Derecho por la Universidad Nacional de Trujillo.
+              <strong className="text-red-600">MSc. Nicolás Bustamante Coronado</strong> nació el 10 de septiembre de 1965 en Lajas, provincia de Chota, Cajamarca. Es abogado de profesión, graduado de la Universidad Católica Los Ángeles de Chimbote, con una Maestría en Derecho por la Universidad Nacional de Trujillo.
             </p>
             <p className="text-lg text-gray-700 mt-4 leading-relaxed">
               Se encuentra inscrito en el <strong className="text-gray-900">Colegio de Abogados de Lambayeque</strong> desde 2006. Fue <strong className="text-red-600">Ministro de Transportes y Comunicaciones</strong> del Perú desde el 4 de marzo hasta el 22 de mayo de 2022.
@@ -95,7 +95,7 @@ export default function BiografiaSection() {
               <div className="relative h-64 md:h-auto">
                 <Image
                   src="/images/hero/bustamante_mtc.jpg"
-                  alt="Dr. Bustamante en el MTC"
+                  alt="MSc. Bustamante en el MTC"
                   fill
                   className="object-cover"
                 />

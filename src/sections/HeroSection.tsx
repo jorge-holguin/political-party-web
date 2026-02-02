@@ -17,7 +17,7 @@ export default function HeroSection() {
               Partido Todo con el Pueblo
             </div>
             <h1 className="text-3xl font-extrabold text-gray-900 sm:text-4xl md:text-5xl lg:text-6xl leading-tight">
-              <span className="block">Dr. Nicolás</span>
+              <span className="block">MSc. Nicolás</span>
               <span className="block text-red-600">Bustamante Coronado</span>
             </h1>
             <p className="mt-3 text-base sm:text-lg text-gray-600 font-medium">
@@ -47,7 +47,7 @@ export default function HeroSection() {
               <div className="relative bg-gradient-to-br from-red-600 to-red-700 p-1 rounded-2xl shadow-2xl">
                 <Image
                   src="/images/hero/bustamante.jpg"
-                  alt="Dr. Nicolás Bustamante Coronado - Secretario General de Todo con el Pueblo"
+                  alt="MSc. Nicolás Bustamante Coronado - Secretario General de Todo con el Pueblo"
                   width={450}
                   height={550}
                   className="rounded-xl object-cover w-full h-auto"

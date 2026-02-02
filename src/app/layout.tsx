@@ -9,8 +9,8 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Todo con el Pueblo - Dr. Nicolás Bustamante Coronado",
-  description: "Partido político Todo con el Pueblo (TCP). Secretario General: Dr. Nicolás Bustamante Coronado. Trabajando por un Perú justo y solidario.",
+  title: "Todo con el Pueblo - MSc. Nicolás Bustamante Coronado",
+  description: "Partido político Todo con el Pueblo (TCP). Secretario General: MSc. Nicolás Bustamante Coronado. Trabajando por un Perú justo y solidario.",
   keywords: ["Todo con el Pueblo", "TCP", "Nicolás Bustamante", "partido político", "Perú"],
   icons: {
     icon: "/tcp.ico",

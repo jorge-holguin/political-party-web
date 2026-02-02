@@ -143,7 +143,7 @@ El presente estatuto fue aprobado en Asamblea Fundacional y registrado ante el J
 ## COMITÉ EJECUTIVO NACIONAL
 
 ### Presidente
-**Dr. Nicolás Bustamante Coronado**
+**MSc. Nicolás Bustamante Coronado**
 - Ex Ministro de Transportes y Comunicaciones
 - Abogado y político peruano
 - Fundador del partido TCP
@@ -199,7 +199,7 @@ Se aprobó el estatuto que normará la organización y funcionamiento del partid
 
 ### CUARTO: DIRECTIVA PROVISIONAL
 Se eligió la directiva provisional encargada de los trámites de inscripción:
-- Presidente: Dr. Nicolás Bustamante Coronado
+- Presidente: MSc. Nicolás Bustamante Coronado
 - Secretario: [Nombre]
 - Tesorero: [Nombre]
 
