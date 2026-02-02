@@ -17,6 +17,7 @@ const tcpItems = [
   { name: "Acta de Fundación", href: "/documents/ActaFundacionTCP.pdf", external: true },
   { name: "Estatuto", href: "/documents/EstatutoTCP.pdf", external: true },
   { name: "Reglamento", href: "/documents/ReglamentoTCP.pdf", external: true },
+  { name: "Resolución de Inscripción", href: "/documents/Resolucion_Inscripcion.pdf", external: true },
 ]
 
 const uneteItems = [
