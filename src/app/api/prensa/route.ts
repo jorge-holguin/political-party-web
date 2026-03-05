@@ -51,7 +51,7 @@ export async function GET() {
         titulo: getText(props["Título"]),
         resumen: getText(props["Excerpt"]),
         contenido: getText(props["Content"]),
-        imagen: imgObj?.type === "external" ? imgObj.external.url : (imgObj?.file?.url || "/images/placeholder.png"),
+        imagen: imgObj?.type === "external" ? imgObj.external.url : (imgObj?.file?.url || "/images/contenido-no-disponible.jpg"),
         fecha: props["Date"]?.date?.start || "",
         slug: getText(props["Slug"]),
         autor: getText(props["Autor"]),

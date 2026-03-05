@@ -1,9 +1,11 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
+import Link from "next/link";
 import Image from "next/image";
-import { Calendar, ExternalLink, Play, Search, Filter, ChevronDown } from "lucide-react";
+import { Calendar, ExternalLink, Play, Search, Filter, ChevronDown, Image as ImageIcon, Video, ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
 import { PrensaSkeleton } from "@/components/SkeletonLoader";
+import MediaModal, { MediaItem } from "@/components/MediaModal";
 
 interface Categoria {
   id: string;
@@ -24,31 +26,40 @@ interface NoticiaItem {
   categoria: string;
 }
 
-const colorMap: Record<string, string> = {
-  brown: "bg-amber-600",
-  gray: "bg-gray-600",
-  blue: "bg-blue-600",
-  pink: "bg-pink-600",
-  green: "bg-green-600",
-  red: "bg-red-600",
-  yellow: "bg-yellow-600",
-  purple: "bg-purple-600",
-};
+interface MultimediaItem {
+  id: string;
+  titulo: string;
+  descripcion: string;
+  tipo: "foto" | "video";
+  url: string;
+  thumbnail: string;
+  fecha: string;
+  categoria: string;
+}
+
+const FALLBACK_IMAGE = "/images/contenido-no-disponible.jpg";
 
 export default function PrensaPage() {
   const [noticias, setNoticias] = useState<NoticiaItem[]>([]);
+  const [multimedia, setMultimedia] = useState<MultimediaItem[]>([]);
   const [categorias, setCategorias] = useState<Categoria[]>([]);
   const [filtroCategoria, setFiltroCategoria] = useState("Todas");
   const [busqueda, setBusqueda] = useState("");
   const [mostrarFiltros, setMostrarFiltros] = useState(false);
   const [cargando, setCargando] = useState(true);
+  const [selectedMedia, setSelectedMedia] = useState<MediaItem | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  
+  const noticiasCarouselRef = useRef<HTMLDivElement>(null);
+  const multimediaCarouselRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [noticiasRes, metadataRes] = await Promise.all([
+        const [noticiasRes, metadataRes, multimediaRes] = await Promise.all([
           fetch("/api/prensa"),
-          fetch("/api/prensa/metadata")
+          fetch("/api/prensa/metadata"),
+          fetch("/api/prensa/multimedia")
         ]);
 
         if (noticiasRes.ok) {
@@ -60,6 +71,11 @@ export default function PrensaPage() {
           const metadataData = await metadataRes.json();
           setCategorias(metadataData.categorias || []);
         }
+
+        if (multimediaRes.ok) {
+          const multimediaData = await multimediaRes.json();
+          setMultimedia(multimediaData);
+        }
       } catch (error) {
         console.error("Error fetching prensa data:", error);
       } finally {
@@ -69,6 +85,32 @@ export default function PrensaPage() {
 
     fetchData();
   }, []);
+
+  const scrollCarousel = (ref: React.RefObject<HTMLDivElement | null>, direction: "left" | "right") => {
+    if (ref.current) {
+      const scrollAmount = direction === "left" ? -400 : 400;
+      ref.current.scrollBy({ left: scrollAmount, behavior: "smooth" });
+    }
+  };
+
+  const handleMediaClick = (item: MultimediaItem) => {
+    setSelectedMedia({
+      id: item.id,
+      titulo: item.titulo,
+      descripcion: item.descripcion,
+      tipo: item.tipo === "video" ? "Video" : "Foto",
+      urlMedia: item.url,
+      thumbnailUrl: item.thumbnail,
+      fecha: item.fecha,
+      categoria: item.categoria,
+    });
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedMedia(null);
+  };
 
   const noticiasFiltradas = noticias.filter((noticia) => {
     const cumpleCategoria = filtroCategoria === "Todas" || noticia.categoria === filtroCategoria;
@@ -237,83 +279,209 @@ export default function PrensaPage() {
           </div>
         )}
 
-        {/* Grid de noticias */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {noticiasFiltradas.slice(1).map((noticia) => (
-            <article
-              key={noticia.id}
-              className="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-100 hover:shadow-xl transition-shadow group"
+        {/* Carrusel de noticias */}
+        <div className="mb-16">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-2xl font-bold text-gray-900">Últimas Noticias</h2>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => scrollCarousel(noticiasCarouselRef, "left")}
+                className="p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors"
+                aria-label="Anterior"
+              >
+                <ChevronLeft className="h-5 w-5 text-gray-600" />
+              </button>
+              <button
+                onClick={() => scrollCarousel(noticiasCarouselRef, "right")}
+                className="p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors"
+                aria-label="Siguiente"
+              >
+                <ChevronRight className="h-5 w-5 text-gray-600" />
+              </button>
+              <Link
+                href="/prensa/noticias"
+                className="ml-4 text-red-600 hover:text-red-700 font-medium text-sm flex items-center gap-1"
+              >
+                Ver todas
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+            </div>
+          </div>
+          
+          {noticiasFiltradas.length === 0 ? (
+            <div className="text-center py-16">
+              <Search className="h-16 w-16 text-gray-300 mx-auto mb-4" />
+              <h3 className="text-xl font-bold text-gray-900 mb-2">
+                No se encontraron resultados
+              </h3>
+              <p className="text-gray-500">
+                Intenta con otros términos de búsqueda o cambia los filtros
+              </p>
+            </div>
+          ) : (
+            <div
+              ref={noticiasCarouselRef}
+              className="flex gap-6 overflow-x-auto pb-4 scrollbar-hide snap-x snap-mandatory"
+              style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
             >
-              <div className="relative h-48 overflow-hidden">
-                {noticia.imagen ? (
-                  <img
-                    src={noticia.imagen}
-                    alt={noticia.titulo}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                  />
-                ) : (
-                  <div className="w-full h-full bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center">
-                    <span className="text-gray-400 text-sm">{noticia.categoria}</span>
-                  </div>
-                )}
-                <div className="absolute top-4 left-4">
-                  <span className={`px-3 py-1 rounded-full text-xs font-medium bg-gray-900 text-white`}>
-                    {noticia.categoria}
-                  </span>
-                </div>
-              </div>
-              <div className="p-6">
-                <div className="flex items-center gap-2 text-gray-500 text-sm mb-3">
-                  <Calendar className="h-4 w-4" />
-                  {formatFecha(noticia.fecha)}
-                </div>
-                <h3 className="text-lg font-bold text-gray-900 mb-2 line-clamp-2 group-hover:text-red-600 transition-colors">
-                  {noticia.titulo}
-                </h3>
-                <p className="text-gray-600 text-sm line-clamp-2 mb-4">
-                  {noticia.resumen}
-                </p>
-                <a
-                  href={`/prensa/${noticia.slug}`}
-                  className="inline-flex items-center gap-1 text-red-600 font-medium text-sm hover:gap-2 transition-all"
+              {noticiasFiltradas.map((noticia) => (
+                <article
+                  key={noticia.id}
+                  className="flex-shrink-0 w-80 bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-100 hover:shadow-xl transition-shadow group snap-start"
                 >
-                  Leer más
-                  <ExternalLink className="h-4 w-4" />
-                </a>
-              </div>
-            </article>
-          ))}
+                  <div className="relative h-48 overflow-hidden">
+                    <Image
+                      src={noticia.imagen || FALLBACK_IMAGE}
+                      alt={noticia.titulo}
+                      fill
+                      className="object-cover group-hover:scale-105 transition-transform duration-300"
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        target.src = FALLBACK_IMAGE;
+                      }}
+                      unoptimized
+                    />
+                    <div className="absolute top-4 left-4">
+                      <span className="px-3 py-1 rounded-full text-xs font-medium bg-gray-900 text-white">
+                        {noticia.categoria}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="p-6">
+                    <div className="flex items-center gap-2 text-gray-500 text-sm mb-3">
+                      <Calendar className="h-4 w-4" />
+                      {formatFecha(noticia.fecha)}
+                    </div>
+                    <h3 className="text-lg font-bold text-gray-900 mb-2 line-clamp-2 group-hover:text-red-600 transition-colors">
+                      {noticia.titulo}
+                    </h3>
+                    <p className="text-gray-600 text-sm line-clamp-2 mb-4">
+                      {noticia.resumen}
+                    </p>
+                    <a
+                      href={`/prensa/${noticia.slug}`}
+                      className="inline-flex items-center gap-1 text-red-600 font-medium text-sm hover:gap-2 transition-all"
+                    >
+                      Leer más
+                      <ExternalLink className="h-4 w-4" />
+                    </a>
+                  </div>
+                </article>
+              ))}
+            </div>
+          )}
         </div>
 
-        {noticiasFiltradas.length === 0 && (
-          <div className="text-center py-16">
-            <Search className="h-16 w-16 text-gray-300 mx-auto mb-4" />
-            <h3 className="text-xl font-bold text-gray-900 mb-2">
-              No se encontraron resultados
-            </h3>
-            <p className="text-gray-500">
-              Intenta con otros términos de búsqueda o cambia los filtros
-            </p>
-          </div>
-        )}
+        {/* Sección Multimedia */}
+        {multimedia.length > 0 && (
+          <div className="mb-12">
+            <div className="text-center mb-8">
+              <h2 className="text-3xl font-bold text-gray-900 mb-4">Galería Multimedia</h2>
+              <div className="w-24 h-1 bg-gradient-to-r from-red-600 to-red-400 mx-auto mb-4"></div>
+              <p className="text-gray-600 max-w-2xl mx-auto">
+                Explora nuestras fotos y videos de eventos, campañas y actividades del partido
+              </p>
+            </div>
 
-        {/* Paginación */}
-        {noticiasFiltradas.length > 0 && (
-          <div className="mt-12 flex justify-center">
-            <div className="flex items-center gap-2">
-              <button className="px-4 py-2 border border-gray-200 rounded-lg text-gray-500 hover:bg-gray-50 transition-colors">
-                Anterior
-              </button>
-              <button className="px-4 py-2 bg-red-600 text-white rounded-lg">1</button>
-              <button className="px-4 py-2 border border-gray-200 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors">2</button>
-              <button className="px-4 py-2 border border-gray-200 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors">3</button>
-              <button className="px-4 py-2 border border-gray-200 rounded-lg text-gray-500 hover:bg-gray-50 transition-colors">
-                Siguiente
-              </button>
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center gap-2">
+                <ImageIcon className="h-5 w-5 text-blue-600" />
+                <Video className="h-5 w-5 text-red-600" />
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => scrollCarousel(multimediaCarouselRef, "left")}
+                  className="p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors"
+                  aria-label="Anterior"
+                >
+                  <ChevronLeft className="h-5 w-5 text-gray-600" />
+                </button>
+                <button
+                  onClick={() => scrollCarousel(multimediaCarouselRef, "right")}
+                  className="p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors"
+                  aria-label="Siguiente"
+                >
+                  <ChevronRight className="h-5 w-5 text-gray-600" />
+                </button>
+                <Link
+                  href="/prensa/multimedia"
+                  className="ml-4 text-red-600 hover:text-red-700 font-medium text-sm flex items-center gap-1"
+                >
+                  Ver todo
+                  <ArrowRight className="h-4 w-4" />
+                </Link>
+              </div>
+            </div>
+
+            <div
+              ref={multimediaCarouselRef}
+              className="flex gap-6 overflow-x-auto pb-4 scrollbar-hide snap-x snap-mandatory"
+              style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+            >
+              {multimedia.map((item) => (
+                <button
+                  key={item.id}
+                  onClick={() => handleMediaClick(item)}
+                  className={`flex-shrink-0 relative bg-gray-100 rounded-xl overflow-hidden cursor-pointer shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02] snap-start ${
+                    item.tipo === "video" ? "w-80 aspect-video" : "w-64 aspect-square"
+                  }`}
+                >
+                  <Image
+                    src={item.thumbnail || FALLBACK_IMAGE}
+                    alt={item.titulo}
+                    fill
+                    className="object-cover"
+                    onError={(e) => {
+                      const target = e.target as HTMLImageElement;
+                      target.src = FALLBACK_IMAGE;
+                    }}
+                    unoptimized
+                  />
+                  
+                  {/* Overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300" />
+                  
+                  {/* Video play icon */}
+                  {item.tipo === "video" && (
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <div className="w-14 h-14 bg-red-600/90 rounded-full flex items-center justify-center shadow-lg">
+                        <Play className="h-6 w-6 text-white ml-1" fill="white" />
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Badge */}
+                  <div className="absolute top-3 left-3">
+                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                      item.tipo === "video" 
+                        ? "bg-red-600 text-white" 
+                        : "bg-white/90 text-gray-700"
+                    }`}>
+                      {item.tipo === "video" ? <Video className="h-3 w-3 inline mr-1" /> : <ImageIcon className="h-3 w-3 inline mr-1" />}
+                      {item.tipo === "video" ? "Video" : "Foto"}
+                    </span>
+                  </div>
+
+                  {/* Title on hover */}
+                  <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent">
+                    <h3 className="text-white font-semibold text-sm line-clamp-2">
+                      {item.titulo}
+                    </h3>
+                  </div>
+                </button>
+              ))}
             </div>
           </div>
         )}
       </div>
+
+      {/* Modal */}
+      <MediaModal
+        isOpen={isModalOpen}
+        media={selectedMedia}
+        onClose={handleCloseModal}
+        fallbackImage={FALLBACK_IMAGE}
+      />
     </div>
   );
 }

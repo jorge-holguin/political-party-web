@@ -6,20 +6,20 @@ export default function SocialButtons() {
   const socialLinks = [
     {
       name: "Facebook",
-      url: "https://www.facebook.com/todoconelpueblo",
+      url: "https://www.facebook.com/profile.php?id=61581776342990",
       icon: Facebook,
       bgColor: "bg-blue-600 hover:bg-blue-700",
     },
     {
       name: "X",
-      url: "https://x.com/todoconelpueblo",
+      url: "",
       icon: null,
       bgColor: "bg-black hover:bg-gray-800",
       customIcon: "x",
     },
     {
       name: "TikTok",
-      url: "https://www.tiktok.com/@todoconelpueblo",
+      url: "",
       icon: null,
       bgColor: "bg-gray-900 hover:bg-black",
     },

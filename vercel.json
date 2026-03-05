@@ -1,0 +1,12 @@
+{
+  "crons": [
+    {
+      "path": "/api/revalidate?secret=todo_con_el_pueblo_2031",
+      "schedule": "0 0 * * *"
+    },
+    {
+      "path": "/api/migrate-images?secret=todo_con_el_pueblo_2031",
+      "schedule": "0 1 * * *"
+    }
+  ]
+}
