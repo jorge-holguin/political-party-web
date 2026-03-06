@@ -26,24 +26,29 @@ interface NoticiaItem {
   categoria: string;
 }
 
-interface MultimediaItem {
+interface ContenidoItem {
   id: string;
   titulo: string;
-  descripcion: string;
-  tipo: "foto" | "video";
-  url: string;
-  thumbnail: string;
+  leyenda: string;
+  tipo: "Foto" | "Video";
+  urlMedia: string;
+  thumbnailUrl: string;
   fecha: string;
   categoria: string;
+  categorias: string[];
 }
 
 const FALLBACK_IMAGE = "/images/contenido-no-disponible.jpg";
 
 export default function PrensaPage() {
   const [noticias, setNoticias] = useState<NoticiaItem[]>([]);
-  const [multimedia, setMultimedia] = useState<MultimediaItem[]>([]);
-  const [categorias, setCategorias] = useState<Categoria[]>([]);
-  const [filtroCategoria, setFiltroCategoria] = useState("Todas");
+  const [multimedia, setMultimedia] = useState<ContenidoItem[]>([]);
+  const [categoriasNoticias, setCategoriasNoticias] = useState<Categoria[]>([]);
+  const [categoriasContenido, setCategoriasContenido] = useState<Categoria[]>([]);
+  const [tiposContenido, setTiposContenido] = useState<Categoria[]>([]);
+  const [filtroCategoriaNoticia, setFiltroCategoriaNoticia] = useState("Todas");
+  const [filtroCategoriaContenido, setFiltroCategoriaContenido] = useState("Todas");
+  const [filtroTipoContenido, setFiltroTipoContenido] = useState("Todos");
   const [busqueda, setBusqueda] = useState("");
   const [mostrarFiltros, setMostrarFiltros] = useState(false);
   const [cargando, setCargando] = useState(true);
@@ -56,10 +61,11 @@ export default function PrensaPage() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [noticiasRes, metadataRes, multimediaRes] = await Promise.all([
+        const [noticiasRes, prensaMetadataRes, contenidoRes, contenidoMetadataRes] = await Promise.all([
           fetch("/api/prensa"),
           fetch("/api/prensa/metadata"),
-          fetch("/api/prensa/multimedia")
+          fetch("/api/contenido"),
+          fetch("/api/contenido/metadata")
         ]);
 
         if (noticiasRes.ok) {
@@ -67,14 +73,20 @@ export default function PrensaPage() {
           setNoticias(noticiasData);
         }
 
-        if (metadataRes.ok) {
-          const metadataData = await metadataRes.json();
-          setCategorias(metadataData.categorias || []);
+        if (prensaMetadataRes.ok) {
+          const metadataData = await prensaMetadataRes.json();
+          setCategoriasNoticias(metadataData.categorias || []);
         }
 
-        if (multimediaRes.ok) {
-          const multimediaData = await multimediaRes.json();
-          setMultimedia(multimediaData);
+        if (contenidoRes.ok) {
+          const contenidoData = await contenidoRes.json();
+          setMultimedia(contenidoData);
+        }
+
+        if (contenidoMetadataRes.ok) {
+          const contenidoMetadata = await contenidoMetadataRes.json();
+          setTiposContenido(contenidoMetadata.tipos || []);
+          setCategoriasContenido(contenidoMetadata.categorias || []);
         }
       } catch (error) {
         console.error("Error fetching prensa data:", error);
@@ -93,14 +105,14 @@ export default function PrensaPage() {
     }
   };
 
-  const handleMediaClick = (item: MultimediaItem) => {
+  const handleMediaClick = (item: ContenidoItem) => {
     setSelectedMedia({
       id: item.id,
       titulo: item.titulo,
-      descripcion: item.descripcion,
-      tipo: item.tipo === "video" ? "Video" : "Foto",
-      urlMedia: item.url,
-      thumbnailUrl: item.thumbnail,
+      descripcion: item.leyenda,
+      tipo: item.tipo === "Video" ? "Video" : "Foto",
+      urlMedia: item.urlMedia,
+      thumbnailUrl: item.thumbnailUrl,
       fecha: item.fecha,
       categoria: item.categoria,
     });
@@ -113,10 +125,16 @@ export default function PrensaPage() {
   };
 
   const noticiasFiltradas = noticias.filter((noticia) => {
-    const cumpleCategoria = filtroCategoria === "Todas" || noticia.categoria === filtroCategoria;
+    const cumpleCategoria = filtroCategoriaNoticia === "Todas" || noticia.categoria === filtroCategoriaNoticia;
     const cumpleBusqueda = noticia.titulo.toLowerCase().includes(busqueda.toLowerCase()) ||
                           noticia.resumen.toLowerCase().includes(busqueda.toLowerCase());
     return cumpleCategoria && cumpleBusqueda;
+  });
+
+  const multimediaFiltrado = multimedia.filter((item) => {
+    const cumpleTipo = filtroTipoContenido === "Todos" || item.tipo === filtroTipoContenido;
+    const cumpleCategoria = filtroCategoriaContenido === "Todas" || item.categoria === filtroCategoriaContenido;
+    return cumpleTipo && cumpleCategoria;
   });
 
   const formatFecha = (fecha: string) => {
@@ -172,24 +190,24 @@ export default function PrensaPage() {
               <ChevronDown className={`h-4 w-4 transition-transform ${mostrarFiltros ? "rotate-180" : ""}`} />
             </button>
 
-            {/* Categorías en desktop */}
+            {/* Categorías de noticias en desktop */}
             <div className="hidden md:flex items-center gap-2 flex-wrap">
               <button
-                onClick={() => setFiltroCategoria("Todas")}
+                onClick={() => setFiltroCategoriaNoticia("Todas")}
                 className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
-                  filtroCategoria === "Todas"
+                  filtroCategoriaNoticia === "Todas"
                     ? "bg-red-600 text-white"
                     : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                 }`}
               >
                 Todas
               </button>
-              {categorias.map((cat) => (
+              {categoriasNoticias.map((cat) => (
                 <button
                   key={cat.id}
-                  onClick={() => setFiltroCategoria(cat.name)}
+                  onClick={() => setFiltroCategoriaNoticia(cat.name)}
                   className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
-                    filtroCategoria === cat.name
+                    filtroCategoriaNoticia === cat.name
                       ? "bg-red-600 text-white"
                       : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                   }`}
@@ -200,32 +218,32 @@ export default function PrensaPage() {
             </div>
           </div>
 
-          {/* Filtros móvil expandidos */}
+          {/* Filtros móvil expandidos - Noticias */}
           {mostrarFiltros && (
             <div className="md:hidden mt-4 pt-4 border-t border-gray-100">
               <div className="flex flex-wrap gap-2">
                 <button
                   onClick={() => {
-                    setFiltroCategoria("Todas");
+                    setFiltroCategoriaNoticia("Todas");
                     setMostrarFiltros(false);
                   }}
                   className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
-                    filtroCategoria === "Todas"
+                    filtroCategoriaNoticia === "Todas"
                       ? "bg-red-600 text-white"
                       : "bg-gray-100 text-gray-700"
                   }`}
                 >
                   Todas
                 </button>
-                {categorias.map((cat) => (
+                {categoriasNoticias.map((cat) => (
                   <button
                     key={cat.id}
                     onClick={() => {
-                      setFiltroCategoria(cat.name);
+                      setFiltroCategoriaNoticia(cat.name);
                       setMostrarFiltros(false);
                     }}
                     className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
-                      filtroCategoria === cat.name
+                      filtroCategoriaNoticia === cat.name
                         ? "bg-red-600 text-white"
                         : "bg-gray-100 text-gray-700"
                     }`}
@@ -383,6 +401,73 @@ export default function PrensaPage() {
               </p>
             </div>
 
+            {/* Filtros de Multimedia */}
+            <div className="flex flex-col md:flex-row justify-center items-center gap-4 mb-6">
+              {/* Filtro por Tipo */}
+              <div className="flex items-center gap-2">
+                <Filter className="h-4 w-4 text-gray-500" />
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => setFiltroTipoContenido("Todos")}
+                    className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
+                      filtroTipoContenido === "Todos"
+                        ? "bg-red-600 text-white"
+                        : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                    }`}
+                  >
+                    Todos
+                  </button>
+                  {tiposContenido.map((tipo) => (
+                    <button
+                      key={tipo.id}
+                      onClick={() => setFiltroTipoContenido(tipo.name)}
+                      className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all flex items-center gap-1 ${
+                        filtroTipoContenido === tipo.name
+                          ? "bg-red-600 text-white"
+                          : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                      }`}
+                    >
+                      {tipo.name === "Foto" && <ImageIcon className="h-3 w-3" />}
+                      {tipo.name === "Video" && <Video className="h-3 w-3" />}
+                      {tipo.name}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Separador */}
+              <div className="hidden md:block w-px h-6 bg-gray-300"></div>
+
+              {/* Filtro por Categoría de Contenido */}
+              <div className="flex items-center gap-2">
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => setFiltroCategoriaContenido("Todas")}
+                    className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
+                      filtroCategoriaContenido === "Todas"
+                        ? "bg-gray-900 text-white"
+                        : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                    }`}
+                  >
+                    Todas
+                  </button>
+                  {categoriasContenido.map((cat) => (
+                    <button
+                      key={cat.id}
+                      onClick={() => setFiltroCategoriaContenido(cat.name)}
+                      className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
+                        filtroCategoriaContenido === cat.name
+                          ? "bg-gray-900 text-white"
+                          : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                      }`}
+                    >
+                      {cat.name}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center gap-2">
                 <ImageIcon className="h-5 w-5 text-blue-600" />
@@ -418,16 +503,14 @@ export default function PrensaPage() {
               className="flex gap-6 overflow-x-auto pb-4 scrollbar-hide snap-x snap-mandatory"
               style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
             >
-              {multimedia.map((item) => (
+              {multimediaFiltrado.map((item) => (
                 <button
                   key={item.id}
                   onClick={() => handleMediaClick(item)}
-                  className={`flex-shrink-0 relative bg-gray-100 rounded-xl overflow-hidden cursor-pointer shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02] snap-start ${
-                    item.tipo === "video" ? "w-80 aspect-video" : "w-64 aspect-square"
-                  }`}
+                  className="flex-shrink-0 relative bg-gray-100 rounded-xl overflow-hidden cursor-pointer shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02] snap-start w-80 aspect-video"
                 >
                   <Image
-                    src={item.thumbnail || FALLBACK_IMAGE}
+                    src={item.thumbnailUrl || item.urlMedia || FALLBACK_IMAGE}
                     alt={item.titulo}
                     fill
                     className="object-cover"
@@ -442,7 +525,7 @@ export default function PrensaPage() {
                   <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300" />
                   
                   {/* Video play icon */}
-                  {item.tipo === "video" && (
+                  {item.tipo === "Video" && (
                     <div className="absolute inset-0 flex items-center justify-center">
                       <div className="w-14 h-14 bg-red-600/90 rounded-full flex items-center justify-center shadow-lg">
                         <Play className="h-6 w-6 text-white ml-1" fill="white" />
@@ -453,12 +536,12 @@ export default function PrensaPage() {
                   {/* Badge */}
                   <div className="absolute top-3 left-3">
                     <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                      item.tipo === "video" 
+                      item.tipo === "Video" 
                         ? "bg-red-600 text-white" 
                         : "bg-white/90 text-gray-700"
                     }`}>
-                      {item.tipo === "video" ? <Video className="h-3 w-3 inline mr-1" /> : <ImageIcon className="h-3 w-3 inline mr-1" />}
-                      {item.tipo === "video" ? "Video" : "Foto"}
+                      {item.tipo === "Video" ? <Video className="h-3 w-3 inline mr-1" /> : <ImageIcon className="h-3 w-3 inline mr-1" />}
+                      {item.tipo}
                     </span>
                   </div>
 

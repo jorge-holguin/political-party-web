@@ -21,7 +21,9 @@ function getYouTubeVideoId(url: string): string | null {
 
 function optimizeCloudinaryUrl(url: string): string {
   if (url && url.includes("cloudinary.com")) {
-    return url.replace("/upload/", "/upload/f_auto,q_auto,w_800/");
+    // Remove any spaces from the URL (fix %20 issue)
+    const cleanUrl = url.replace(/\s+/g, "");
+    return cleanUrl.replace("/upload/", "/upload/f_auto,q_auto,w_800/");
   }
   return url;
 }

@@ -214,7 +214,7 @@ export default function ContenidoSection() {
           </div>
         ) : (
           /* Grid de contenido */
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {contenidoFiltrado.map((item) => {
               const imageSrc = item.tipo === "Video" 
                 ? (item.thumbnailUrl || "/images/logos/logo.png")
@@ -224,7 +224,7 @@ export default function ContenidoSection() {
               <div
                 key={item.id}
                 onClick={() => handleMediaClick(item)}
-                className="group relative bg-gray-100 rounded-xl overflow-hidden cursor-pointer aspect-square shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02]"
+                className="group relative bg-gray-100 rounded-xl overflow-hidden cursor-pointer aspect-video shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02]"
               >
                 {/* Imagen o thumbnail */}
                 <Image

@@ -22,6 +22,9 @@ const https = require('https');
 const http = require('http');
 const { URL } = require('url');
 
+// Load environment variables from .env file
+require('dotenv').config();
+
 // Configuration from environment variables
 const NOTION_TOKEN = process.env.NOTION_TOKEN;
 const DATABASE_ID = process.env.NOTION_PRENSA_DATABASE_ID;
